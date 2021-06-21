@@ -64,14 +64,13 @@ class Projectile {
 };
 
 class Defender {
-    constructor(x, y) {
+    constructor(x, y, width, height) {
         this.x = x;
         this.y = y;
-        this.width = this.cellSize;
-        this.height = this.cellSize;
+        this.width = width;
+        this.height = height;
         this.shooting = false;
         this.health = 100;
-        this.projectiles = [];
         this.timer = 0;
     };
 
@@ -83,7 +82,7 @@ class Defender {
         ctx.fillText(Math.floor(this.health), this.x + 15, this.y + 30);
     }
 
-    update() {
+    update(projectiles) {
         if (this.shooting) {
             this.timer += 1;
             if (this.timer % 100 === 0) {
@@ -97,12 +96,12 @@ class Defender {
 };
 
 class Enemy {
-    constructor(veritcalPosition) {
+    constructor(veritcalPosition, width, height) {
         this.id = Math.random();
         this.x = canvas.width;
         this.y = veritcalPosition;
-        this.width = this.cellSize;
-        this.height = this.cellSize;
+        this.width = width;
+        this.height = height;
         this.speed = Math.random() * 0.2 + 0.4;
         this.movement = this.speed;
         this.health = 100;
@@ -145,7 +144,6 @@ class Game {
         this.numKills = 0;
         this.frame = 0;
         this.gameOver = false;
-        this.boundRecursiveAnimate = null;
         
         this.gameGrid = [];
         for (let y = this.cellSize; y < this.canvas.height; y += this.cellSize) {
@@ -154,33 +152,32 @@ class Game {
             };
         };
 
-        this.canvas.addEventListener('mousemove', function(e) {
+        this.canvas.addEventListener('mousemove', e => {
             this.mouse.x = e.x - this.canvasPosition.left;
-            this.this.mouse.y = e.y - this.canvasPosition.top;
+            this.mouse.y = e.y - this.canvasPosition.top;
         });
-        this.canvas.addEventListener('mouseleave', function(e) {
+        this.canvas.addEventListener('mouseleave', () => {
             this.mouse.x = undefined;
             this.mouse.y = undefined;
         });
-        this.canvas.addEventListener('click', function() {
+        this.canvas.addEventListener('click', () => {
             const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
             const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
             const positionString = String(gridPositionX) + ',' + String(gridPositionY);
             if (gridPositionY < this.cellSize) return;
             if (this.defenders[positionString]) return;
             if (this.numResources >= this.defenderCost) {
-                this.defenders.set(positionString, new Defender(gridPositionX, gridPositionY));
-                this.numResources -= defenderCost;
+                this.defenders.set(positionString, new Defender(gridPositionX, gridPositionY, this.cellSize, this.cellSize));
+                this.numResources -= this.defenderCost;
             };
         });
     };
 
-    start() {
-        this.boundRecursiveAnimate = this.animate.bind(this);
+    start = () => {
         this.animate();
     };
 
-    animate() {
+    animate = () => {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = 'blue';
         this.ctx.fillRect(0, 0, this.controlsBar.width, this.controlsBar.height);
@@ -190,10 +187,10 @@ class Game {
         this.handleEnemies();
         this.handleGameStatus();
         this.frame += 1;
-        if (!game.gameOver) requestAnimationFrame(this.boundRecursiveAnimate);
+        if (!game.gameOver) requestAnimationFrame(this.animate);
     };
 
-    collisionDetection(first, second) {
+    collisionDetection = (first, second) => {
         if (first.x >= second.x + second.width ||
             second.x >= first.x + first.width ||
             first.y >= second.y + second.height ||
@@ -203,19 +200,19 @@ class Game {
         return true;
     };
 
-    handleGameGrid() {
+    handleGameGrid = () => {
         for (const cell of this.gameGrid) {
             cell.draw(this.ctx, this.mouse, this.collisionDetection);
         };
     };
 
-    handleProjectiles() {
+    handleProjectiles = () => {
         let temp = [];
-        for (projectile of this.projectiles) {
+        for (const projectile of this.projectiles) {
             projectile.update();
             projectile.draw(this.ctx);
 
-            projectileDestroyed = false;
+            let projectileDestroyed = false;
             for (const [e, enemy] of this.enemies) {
                 if (this.collisionDetection(projectile, enemy)) {
                     enemy.health -= projectile.power;
@@ -232,11 +229,11 @@ class Game {
         this.projectiles = temp;
     };
 
-    handleDefenders() {
+    handleDefenders = () => {
         for (const [d, defender] of this.defenders) {
-            defender.update();
+            defender.update(this.projectiles);
             defender.draw(this.ctx);
-            enemyInRow = false;
+            let enemyInRow = false;
             for (const [e, enemy] of this.enemies) {
                 if (enemy.y == defender.y) enemyInRow = true;
     
@@ -254,7 +251,7 @@ class Game {
         };
     };
 
-    handleEnemies() {
+    handleEnemies = () => {
         for (const [e, enemy] of this.enemies) {
             enemy.update();
             enemy.draw(this.ctx);
@@ -268,13 +265,13 @@ class Game {
     
         if (this.frame % this.enemiesInterval === 0) {
             const veritcalPosition = Math.floor(Math.random() * 5 + 1) * this.cellSize;
-            const newEnemy = new Enemy(veritcalPosition);
+            const newEnemy = new Enemy(veritcalPosition, this.cellSize, this.cellSize);
             this.enemies.set(newEnemy.id, newEnemy);
             if (this.enemiesInterval > 120) this.enemiesInterval -= 50;
         };
     };
 
-    handleGameStatus() {
+    handleGameStatus = () => {
         this.ctx.fillStyle = 'gold';
         this.ctx.font = '30px Arial';
         this.ctx.fillText('Kills: ' + this.numKills, 20, 40);
