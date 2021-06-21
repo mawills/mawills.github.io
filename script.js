@@ -75,6 +75,7 @@ class Defender {
         this.shooting = false;
         this.health = 100;
         this.timer = 0;
+        this.range = canvas.width / 2;
     };
 
     draw(ctx) {
@@ -198,13 +199,17 @@ class Game {
     };
 
     collisionDetection = (first, second) => {
-        if (first.x > second.x + second.width ||
-            second.x > first.x + first.width ||
-            first.y > second.y + second.height ||
-            second.y > first.y + first.height) {
+        if (first.x >= second.x + second.width ||
+            second.x >= first.x + first.width ||
+            first.y >= second.y + second.height ||
+            second.y >= first.y + first.height) {
             return false;
         };
         return true;
+    };
+
+    calculateDistance = (a, b) => {
+        return Math.sqrt(a*a + b*b);
     };
 
     handleGameGrid = () => {
@@ -240,21 +245,12 @@ class Game {
         for (const [d, defender] of this.defenders) {
             defender.update(this.projectiles);
             defender.draw(this.ctx);
-            let enemyInRow = false;
+            let enemyInRange = false;
             for (const [e, enemy] of this.enemies) {
-                if (enemy.y == defender.y) enemyInRow = true;
-    
-                if (this.collisionDetection(defender, enemy)) {
-                    enemy.movement = 0;
-                    defender.health -= 0.2;
-                };
-    
-                if (defender.health <= 0) {
-                    this.defenders.delete(d);
-                    enemy.movement = enemy.speed;
-                };
+                const distanceToEnemy = this.calculateDistance(defender.x + defender.width, enemy.x);
+                if (distanceToEnemy <= defender.range) enemyInRange = true;
             };
-            defender.shooting = enemyInRow;
+            defender.shooting = enemyInRange;
         };
     };
 
@@ -262,7 +258,9 @@ class Game {
         for (const [e, enemy] of this.enemies) {
             enemy.update();
             enemy.draw(this.ctx);
-            if (enemy.x < 0) this.gameOver = true;
+            if (enemy.x + enemy.width < 0) {
+                this.enemies.delete(e);
+            }
             if (enemy.health <= 0) {
                 this.enemies.delete(e);
                 this.numResources += enemy.lootValue;
@@ -271,9 +269,9 @@ class Game {
         };
     
         if (this.frame % this.enemiesInterval === 0) {
-            const veritcalPosition = Math.floor(Math.random() * 5 + 1) * this.cellSize;
             const newEnemyWidth = this.cellSize - this.cellGap * 2;
             const newEnemyHeight = newEnemyWidth;
+            const veritcalPosition = Math.floor(Math.random() * (this.canvas.height - this.controlsBar.height / this.cellSize) + newEnemyHeight);
             const newEnemy = new Enemy(veritcalPosition, newEnemyWidth, newEnemyHeight);
             this.enemies.set(newEnemy.id, newEnemy);
             if (this.enemiesInterval > 120) this.enemiesInterval -= 50;
@@ -285,9 +283,9 @@ class Game {
         this.ctx.fillRect(0, 0, this.controlsBar.width, this.controlsBar.height);
         this.ctx.fillStyle = 'gold';
         this.ctx.font = '30px Arial';
-        this.ctx.fillText('Kills: ' + this.numKills, 20, 40);
-        this.ctx.fillText('Resources: ' + this.numResources, 20, 80);
-        this.ctx.fillText('Wave: ' + this.waveCount, this.canvas.width - 150, 40);
+        this.ctx.fillText('Resources: ' + this.numResources, 20, 35);
+        this.ctx.fillText('Kills: ' + this.numKills, 270, 35);
+        this.ctx.fillText('Wave: ' + this.waveCount, this.canvas.width - 150, 35);
         if (this.gameOver) {
             this.ctx.fillStyle = 'black';
             this.ctx.font = '90px Arial';
