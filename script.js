@@ -14,7 +14,7 @@ class Configuration {
         };
         
     }
-}
+};
 
 class Cell {
     constructor(x, y) {
@@ -39,7 +39,7 @@ class Mouse {
         this.width = config.MOUSE_WIDTH;
         this.height = config.MOUSE_HEIGHT;
     }
-}
+};
 
 class Projectile {
     constructor(x, y) {
@@ -61,7 +61,7 @@ class Projectile {
         ctx.arc(this.x, this.y, this.width, 0, Math.PI * 2);
         ctx.fill();
     }
-}
+};
 
 class Defender {
     constructor(x, y) {
@@ -94,7 +94,7 @@ class Defender {
         };
         
     }
-}
+};
 
 class Enemy {
     constructor(veritcalPosition) {
@@ -121,7 +121,7 @@ class Enemy {
         ctx.font = '30px Arial';
         ctx.fillText(Math.floor(this.health), this.x + 15, this.y + 30);
     }
-}
+};
 
 class Game {
     constructor(config) {
@@ -145,13 +145,14 @@ class Game {
         this.numKills = 0;
         this.frame = 0;
         this.gameOver = false;
+        this.boundRecursiveAnimate = null;
         
         this.gameGrid = [];
         for (let y = this.cellSize; y < this.canvas.height; y += this.cellSize) {
             for (let x = 0; x < this.canvas.width; x += this.cellSize) {
                 this.gameGrid.push(new Cell(x, y));
-            }
-        }
+            };
+        };
 
         this.canvas.addEventListener('mousemove', function(e) {
             this.mouse.x = e.x - this.canvasPosition.left;
@@ -172,10 +173,14 @@ class Game {
                 this.numResources -= defenderCost;
             };
         });
-    }
+    };
+
+    start() {
+        this.boundRecursiveAnimate = this.animate.bind(this);
+        this.animate();
+    };
 
     animate() {
-        console.log(this);
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = 'blue';
         this.ctx.fillRect(0, 0, this.controlsBar.width, this.controlsBar.height);
@@ -185,7 +190,7 @@ class Game {
         this.handleEnemies();
         this.handleGameStatus();
         this.frame += 1;
-        if (!this.gameOver) requestAnimationFrame(this.animate);
+        if (!game.gameOver) requestAnimationFrame(this.boundRecursiveAnimate);
     };
 
     collisionDetection(first, second) {
@@ -194,14 +199,14 @@ class Game {
             first.y >= second.y + second.height ||
             second.y >= first.y + first.height) {
             return false;
-        }
+        };
         return true;
-    }
+    };
 
     handleGameGrid() {
         for (const cell of this.gameGrid) {
             cell.draw(this.ctx, this.mouse, this.collisionDetection);
-        }
+        };
     };
 
     handleProjectiles() {
@@ -215,15 +220,15 @@ class Game {
                 if (this.collisionDetection(projectile, enemy)) {
                     enemy.health -= projectile.power;
                     projectileDestroyed = true;
-                }
-            }
+                };
+            };
 
             if (projectile.x > this.canvas.width - this.cellSize) {
                 projectileDestroyed = true;
-            }
+            };
 
             if (!projectileDestroyed) temp.push(projectile);
-        }
+        };
         this.projectiles = temp;
     };
 
@@ -238,13 +243,13 @@ class Game {
                 if (this.collisionDetection(defender, enemy)) {
                     enemy.movement = 0;
                     defender.health -= 0.2;
-                }
+                };
     
                 if (defender.health <= 0) {
                     this.defenders.delete(d);
                     enemy.movement = enemy.speed;
-                }
-            }
+                };
+            };
             defender.shooting = enemyInRow;
         };
     };
@@ -278,10 +283,10 @@ class Game {
             this.ctx.fillStyle = 'black';
             this.ctx.font = '90px Arial';
             this.ctx.fillText('GAME OVER', 135, 330);
-        }
-    }
+        };
+    };
 };
 
 config = new Configuration(100, 900, 600);
 game = new Game(config);
-game.animate();
+game.start();
