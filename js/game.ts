@@ -47,7 +47,7 @@ export default class Game {
       width: this.canvas.width,
       height: this.cellSize,
     };
-    this.mouse = new Mouse(config.MOUSE_CONFIG);
+    this.mouse = new Mouse(config);
     this.enemiesInterval = config.ENEMY_SPAWN_INTERVAL;
     this.numResources = config.PLAYER_STARTING_RESOURCES;
     this.defenderCost = config.DEFENDER_COST;
