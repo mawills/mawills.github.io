@@ -1,7 +1,17 @@
 import Projectile from "./projectile";
+import Mouse from "./mouse";
 
 export default class Defender {
-  constructor(x, y, width, height) {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  shooting: boolean;
+  health: number;
+  timer: number;
+  range: number;
+
+  constructor(x: number, y: number, width: number, height: number) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -12,12 +22,16 @@ export default class Defender {
     this.range = 200;
   }
 
-  draw(ctx, mouse, collisionDetection) {
+  draw(
+    ctx: CanvasRenderingContext2D,
+    mouse: Mouse,
+    collisionDetection: Function
+  ) {
     ctx.fillStyle = "blue";
     ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.fillStyle = "gold";
     ctx.font = "30px Arial";
-    ctx.fillText(Math.floor(this.health), this.x + 15, this.y + 30);
+    ctx.fillText(String(Math.floor(this.health)), this.x + 15, this.y + 30);
     if (mouse.x && mouse.y && collisionDetection(this, mouse)) {
       ctx.beginPath();
       const centerX = this.x + this.width / 2;

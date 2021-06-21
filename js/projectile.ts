@@ -1,5 +1,12 @@
 export default class Projectile {
-  constructor(x, y) {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  power: number;
+  speed: number;
+
+  constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
     this.width = 10;
@@ -12,7 +19,7 @@ export default class Projectile {
     this.x += this.speed;
   }
 
-  draw(ctx) {
+  draw(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = "black";
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.width, 0, Math.PI * 2);

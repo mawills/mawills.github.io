@@ -2,14 +2,42 @@ import Cell from "./cell";
 import Mouse from "./mouse";
 import Defender from "./defender";
 import Enemy from "./enemy";
+import Projectile from "./projectile";
+import Configuration from "./configuration";
+
+interface ControlsBar {
+  width: number;
+  height: number;
+}
 
 export default class Game {
-  constructor(config) {
-    this.canvas = document.getElementById("canvas");
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  canvasPosition: ClientRect;
+  cellSize: number;
+  cellGap: number;
+  defenders: Map<string, Defender>;
+  enemies: Map<number, Enemy>;
+  projectiles: Projectile[];
+  controlsBar: ControlsBar;
+  mouse: Mouse;
+  enemiesInterval: number;
+  numResources: number;
+  defenderCost: number;
+  waveSize: number;
+  waveGrowthSize: number;
+  waveCount: number;
+  numKills: number;
+  frame: number;
+  gameOver: boolean;
+  gameGrid: Cell[];
+
+  constructor(config: Configuration) {
+    this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
     this.canvas.width = config.CANVAS_WIDTH;
     this.canvas.height = config.CANVAS_HEIGHT;
-    this.ctx = canvas.getContext("2d");
-    this.canvasPosition = canvas.getBoundingClientRect();
+    this.ctx = this.canvas.getContext("2d");
+    this.canvasPosition = this.canvas.getBoundingClientRect();
     this.cellSize = config.CELL_SIZE;
     this.cellGap = config.CELL_GAP;
     this.defenders = new Map();
@@ -96,7 +124,10 @@ export default class Game {
     return true;
   };
 
-  calculateDistance = (first, second) => {
+  calculateDistance = (
+    first: Defender | Enemy | Projectile,
+    second: Defender | Enemy | Projectile
+  ) => {
     const deltaX = Math.abs(first.x - second.x);
     const deltaY = Math.abs(first.y - second.y);
     return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
@@ -115,12 +146,12 @@ export default class Game {
       projectile.draw(this.ctx);
 
       let projectileDestroyed = false;
-      for (const [e, enemy] of this.enemies) {
+      this.enemies.forEach((enemy) => {
         if (this.collisionDetection(projectile, enemy)) {
           enemy.health -= projectile.power;
           projectileDestroyed = true;
         }
-      }
+      });
 
       if (projectile.x > this.canvas.width - this.cellSize) {
         projectileDestroyed = true;
@@ -132,31 +163,31 @@ export default class Game {
   };
 
   handleDefenders = () => {
-    for (const [d, defender] of this.defenders) {
+    this.defenders.forEach((defender) => {
       defender.update(this.projectiles);
       defender.draw(this.ctx, this.mouse, this.collisionDetection);
       let enemyInRange = false;
-      for (const [e, enemy] of this.enemies) {
+      this.enemies.forEach((enemy) => {
         const distanceToEnemy = this.calculateDistance(defender, enemy);
         if (distanceToEnemy <= defender.range) enemyInRange = true;
-      }
+      });
       defender.shooting = enemyInRange;
-    }
+    });
   };
 
   handleEnemies = () => {
-    for (const [e, enemy] of this.enemies) {
+    this.enemies.forEach((enemy, key) => {
       enemy.update();
       enemy.draw(this.ctx);
       if (enemy.x + enemy.width < 0) {
-        this.enemies.delete(e);
+        this.enemies.delete(key);
       }
       if (enemy.health <= 0) {
-        this.enemies.delete(e);
+        this.enemies.delete(key);
         this.numResources += enemy.lootValue;
         this.numKills += 1;
       }
-    }
+    });
 
     if (this.frame % this.enemiesInterval === 0) {
       const newEnemyWidth = this.cellSize - this.cellGap * 2;
@@ -167,6 +198,7 @@ export default class Game {
           newEnemyHeight
       );
       const newEnemy = new Enemy(
+        this.canvas.width,
         veritcalPosition,
         newEnemyWidth,
         newEnemyHeight
