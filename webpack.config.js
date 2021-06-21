@@ -3,10 +3,7 @@ const path = require("path");
 module.exports = {
   entry: "./js/main.js",
   module: {
-    rules: [
-      { test: /\.css$/, use: ["style-loader", "css-loader"] },
-      { test: /\.(js)$/, use: "babel-loader" },
-    ],
+    rules: [{ test: /\.(js)$/, use: "babel-loader" }],
   },
   output: {
     path: path.resolve(__dirname, "dist"),
