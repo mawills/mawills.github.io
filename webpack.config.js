@@ -13,8 +13,9 @@ module.exports = {
     extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
   },
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "index_bundle.js",
+    path: path.resolve(__dirname, "/dist/"),
+    publicPath: "/dist/",
+    filename: "bundle.js",
   },
   mode: process.env.NODE_ENV === "production" ? "production" : "development",
 };
