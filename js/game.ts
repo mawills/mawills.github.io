@@ -74,7 +74,6 @@ export default class Game {
       this.mouse.y = undefined;
     });
     this.canvas.addEventListener("click", () => {
-      console.log(this.defenders);
       const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
       const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
       const positionString =
