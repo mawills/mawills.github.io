@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    entry: './js/script.js',
+    entry: './js/main.js',
     module: {
         rules: [
             { test: /\.css$/, use: [ 'style-loader', 'css-loader' ] },

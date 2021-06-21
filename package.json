@@ -2,7 +2,7 @@
   "name": "evo-war",
   "version": "1.0.0",
   "description": "",
-  "main": "./js/script.js",
+  "main": "./js/main.js",
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.14.6",

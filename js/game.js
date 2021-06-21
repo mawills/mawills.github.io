@@ -1,139 +1,9 @@
-class Configuration {
-    constructor() {
-        this.CELL_SIZE = 50;
-        this.CELL_GAP = 0;
-        this.CANVAS_WIDTH = 900;
-        this.CANVAS_HEIGHT = 600;
-        this.DEFENDER_COST = 100;
-        this.ENEMY_SPAWN_INTERVAL = 1200;
-        this.ENEMY_STARTING_POPULATION = 100;
-        this.STARTING_WAVE_SIZE = 10;
-        this.WAVE_GROWTH = 3;
-        this.PLAYER_STARTING_RESOURCES = 300;
-        this.MOUSE_CONFIG = {
-            MOUSE_STARTING_X: 10,
-            MOUSE_STARTING_Y: 10,
-            MOUSE_WIDTH: 0.1,
-            MOUSE_HEIGHT:0.1,
-        };
-    }
-};
+import Cell from './cell';
+import Mouse from './mouse';
+import Defender from './defender';
+import Enemy from './enemy';
 
-class Cell {
-    constructor(x, y, size) {
-        this.x = x;
-        this.y = y;
-        this.width = size;
-        this.height = size;
-    };
-
-    draw(ctx, mouse, collisionDetection) {
-        if (mouse.x && mouse.y && collisionDetection(this, mouse)) {
-            ctx.strokeStyle = 'black';
-            ctx.strokeRect(this.x, this.y, this.width, this.height);
-        }
-    };
-};
-
-class Mouse {
-    constructor(config) {
-        this.x = config.MOUSE_STARTING_X;
-        this.y = config.MOUSE_STARTING_Y;
-        this.width = config.MOUSE_WIDTH;
-        this.height = config.MOUSE_HEIGHT;
-    };
-};
-
-class Projectile {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.width = 10;
-        this.height = 10;
-        this.power = 20;
-        this.speed = 5;
-    };
-
-    update() {
-        this.x += this.speed;
-    };
-
-    draw(ctx) {
-        ctx.fillStyle = 'black';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.width, 0, Math.PI * 2);
-        ctx.fill();
-    };
-};
-
-class Defender {
-    constructor(x, y, width, height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.shooting = false;
-        this.health = 100;
-        this.timer = 0;
-        this.range = 200;
-    };
-
-    draw(ctx, mouse, collisionDetection) {
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        ctx.fillStyle = 'gold';
-        ctx.font = '30px Arial';
-        ctx.fillText(Math.floor(this.health), this.x + 15, this.y + 30);
-        if (mouse.x && mouse.y && collisionDetection(this, mouse)) {
-            ctx.beginPath();
-            const centerX = this.x + (this.width / 2);
-            const centerY = this.y + (this.height / 2);
-            ctx.arc(centerX, centerY, this.range, 0, Math.PI*2);
-            ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
-            ctx.fill();
-        }
-    };
-
-    update(projectiles) {
-        if (this.shooting) {
-            this.timer += 1;
-            if (this.timer % 100 === 0) {
-                projectiles.push(new Projectile(this.x + (this.width / 2), this.y + (this.height / 2)));
-            }
-        } else {
-            this.timer = 0;
-        }
-    };
-};
-
-class Enemy {
-    constructor(y, width, height) {
-        this.id = Math.random();
-        this.x = canvas.width;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.speed = Math.random() * 0.2 + 0.4;
-        this.movement = this.speed;
-        this.health = 100;
-        this.maxHealth = this.health;
-        this.lootValue = 20;
-    };
-
-    update() {
-        this.x -= this.movement;
-    };
-
-    draw(ctx) {
-        ctx.fillStyle = 'red';
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        ctx.fillStyle = 'black';
-        ctx.font = '30px Arial';
-        ctx.fillText(Math.floor(this.health), this.x + 15, this.y + 30);
-    };
-};
-
-class Game {
+export default class Game {
     constructor(config) {
         this.canvas = document.getElementById('canvas');
         this.canvas.width = config.CANVAS_WIDTH;
@@ -202,7 +72,7 @@ class Game {
         this.handleEnemies();
         this.handleGameStatus();
         this.frame += 1;
-        if (!game.gameOver) requestAnimationFrame(this.animate);
+        if (!this.gameOver) requestAnimationFrame(this.animate);
     };
 
     collisionDetection = (first, second) => {
@@ -302,7 +172,3 @@ class Game {
         }
     };
 };
-
-config = new Configuration();
-game = new Game(config);
-game.start();
