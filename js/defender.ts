@@ -42,7 +42,7 @@ export default class Defender {
     }
   }
 
-  update(projectiles) {
+  update(projectiles: Projectile[]) {
     if (this.shooting) {
       this.timer += 1;
       if (this.timer % 100 === 0) {

@@ -74,12 +74,13 @@ export default class Game {
       this.mouse.y = undefined;
     });
     this.canvas.addEventListener("click", () => {
+      console.log(this.defenders);
       const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
       const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
       const positionString =
         String(gridPositionX) + "," + String(gridPositionY);
       if (gridPositionY < this.cellSize) return;
-      if (this.defenders[positionString]) return;
+      if (this.defenders.has(positionString)) return;
       if (this.numResources >= this.defenderCost) {
         const newDefenderWidth = this.cellSize - this.cellGap * 2;
         const newDefederHeight = newDefenderWidth;
@@ -112,7 +113,10 @@ export default class Game {
     if (!this.gameOver) requestAnimationFrame(this.animate);
   };
 
-  collisionDetection = (first, second) => {
+  collisionDetection = (
+    first: Defender | Enemy | Projectile,
+    second: Defender | Enemy | Projectile
+  ) => {
     if (
       first.x >= second.x + second.width ||
       second.x >= first.x + first.width ||
