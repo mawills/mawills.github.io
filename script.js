@@ -1,6 +1,7 @@
 class Configuration {
     constructor(cellSize, canvasWidth, canvasHeight) {
         this.CELL_SIZE = cellSize;
+        this.CELL_GAP = 2;
         this.CANVAS_WIDTH = canvasWidth;
         this.CANVAS_HEIGHT = canvasHeight;
         this.DEFENDER_COST = 100;
@@ -130,6 +131,7 @@ class Game {
         this.ctx = canvas.getContext('2d');
         this.canvasPosition = canvas.getBoundingClientRect();
         this.cellSize = config.CELL_SIZE;
+        this.cellGap = config.CELL_GAP;
         this.defenders = new Map();
         this.enemies = new Map();
         this.projectiles = [];
@@ -141,6 +143,7 @@ class Game {
         this.enemiesInterval = config.ENEMY_SPAWN_INTERVAL;
         this.numResources = config.PLAYER_STARTING_RESOURCES;
         this.defenderCost = config.DEFENDER_COST;
+        this.waveCount = 1;
         this.numKills = 0;
         this.frame = 0;
         this.gameOver = false;
@@ -167,7 +170,9 @@ class Game {
             if (gridPositionY < this.cellSize) return;
             if (this.defenders[positionString]) return;
             if (this.numResources >= this.defenderCost) {
-                this.defenders.set(positionString, new Defender(gridPositionX, gridPositionY, this.cellSize, this.cellSize));
+                const newDefenderWidth = this.cellSize - this.cellGap * 2;
+                const newDefederHeight = newDefenderWidth;
+                this.defenders.set(positionString, new Defender(gridPositionX, gridPositionY, newDefenderWidth, newDefederHeight));
                 this.numResources -= this.defenderCost;
             };
         });
@@ -179,8 +184,6 @@ class Game {
 
     animate = () => {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.fillStyle = 'blue';
-        this.ctx.fillRect(0, 0, this.controlsBar.width, this.controlsBar.height);
         this.handleGameGrid();
         this.handleDefenders();
         this.handleProjectiles();
@@ -265,17 +268,22 @@ class Game {
     
         if (this.frame % this.enemiesInterval === 0) {
             const veritcalPosition = Math.floor(Math.random() * 5 + 1) * this.cellSize;
-            const newEnemy = new Enemy(veritcalPosition, this.cellSize, this.cellSize);
+            const newEnemyWidth = this.cellSize - this.cellGap * 2;
+            const newEnemyHeight = newEnemyWidth;
+            const newEnemy = new Enemy(veritcalPosition, newEnemyWidth, newEnemyHeight);
             this.enemies.set(newEnemy.id, newEnemy);
             if (this.enemiesInterval > 120) this.enemiesInterval -= 50;
         };
     };
 
     handleGameStatus = () => {
+        this.ctx.fillStyle = 'blue';
+        this.ctx.fillRect(0, 0, this.controlsBar.width, this.controlsBar.height);
         this.ctx.fillStyle = 'gold';
         this.ctx.font = '30px Arial';
         this.ctx.fillText('Kills: ' + this.numKills, 20, 40);
         this.ctx.fillText('Resources: ' + this.numResources, 20, 80);
+        this.ctx.fillText('Wave: ' + this.waveCount, this.canvas.width - 150, 40);
         if (this.gameOver) {
             this.ctx.fillStyle = 'black';
             this.ctx.font = '90px Arial';
