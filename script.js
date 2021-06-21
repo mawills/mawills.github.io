@@ -15,7 +15,7 @@ class Configuration {
             MOUSE_STARTING_Y: 10,
             MOUSE_WIDTH: 0.1,
             MOUSE_HEIGHT:0.1,
-        };       
+        };
     }
 };
 
@@ -32,7 +32,7 @@ class Cell {
             ctx.strokeStyle = 'black';
             ctx.strokeRect(this.x, this.y, this.width, this.height);
         }
-    }
+    };
 };
 
 class Mouse {
@@ -41,7 +41,7 @@ class Mouse {
         this.y = config.MOUSE_STARTING_Y;
         this.width = config.MOUSE_WIDTH;
         this.height = config.MOUSE_HEIGHT;
-    }
+    };
 };
 
 class Projectile {
@@ -52,18 +52,18 @@ class Projectile {
         this.height = 10;
         this.power = 20;
         this.speed = 5;
-    }
+    };
 
     update() {
         this.x += this.speed;
-    }
+    };
 
     draw(ctx) {
         ctx.fillStyle = 'black';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.width, 0, Math.PI * 2);
         ctx.fill();
-    }
+    };
 };
 
 class Defender {
@@ -91,7 +91,7 @@ class Defender {
             ctx.arc(centerX, centerY, this.range, 0, Math.PI*2);
             ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
             ctx.fill();
-        };
+        }
     };
 
     update(projectiles) {
@@ -99,11 +99,10 @@ class Defender {
             this.timer += 1;
             if (this.timer % 100 === 0) {
                 projectiles.push(new Projectile(this.x + (this.width / 2), this.y + (this.height / 2)));
-            };
+            }
         } else {
             this.timer = 0;
-        };
-        
+        }
     };
 };
 
@@ -119,11 +118,11 @@ class Enemy {
         this.health = 100;
         this.maxHealth = this.health;
         this.lootValue = 20;
-    }
+    };
 
     update() {
         this.x -= this.movement;
-    }
+    };
 
     draw(ctx) {
         ctx.fillStyle = 'red';
@@ -131,7 +130,7 @@ class Enemy {
         ctx.fillStyle = 'black';
         ctx.font = '30px Arial';
         ctx.fillText(Math.floor(this.health), this.x + 15, this.y + 30);
-    }
+    };
 };
 
 class Game {
@@ -165,8 +164,8 @@ class Game {
         for (let y = this.cellSize; y < this.canvas.height; y += this.cellSize) {
             for (let x = 0; x < this.canvas.width; x += this.cellSize) {
                 this.gameGrid.push(new Cell(x, y, this.cellSize));
-            };
-        };
+            }
+        }
 
         this.canvas.addEventListener('mousemove', e => {
             this.mouse.x = e.x - this.canvasPosition.left;
@@ -187,7 +186,7 @@ class Game {
                 const newDefederHeight = newDefenderWidth;
                 this.defenders.set(positionString, new Defender(gridPositionX, gridPositionY, newDefenderWidth, newDefederHeight));
                 this.numResources -= this.defenderCost;
-            };
+            }
         });
     };
 
@@ -212,7 +211,7 @@ class Game {
             first.y >= second.y + second.height ||
             second.y >= first.y + first.height) {
             return false;
-        };
+        }
         return true;
     };
 
@@ -239,15 +238,15 @@ class Game {
                 if (this.collisionDetection(projectile, enemy)) {
                     enemy.health -= projectile.power;
                     projectileDestroyed = true;
-                };
-            };
+                }
+            }
 
             if (projectile.x > this.canvas.width - this.cellSize) {
                 projectileDestroyed = true;
-            };
+            }
 
             if (!projectileDestroyed) temp.push(projectile);
-        };
+        }
         this.projectiles = temp;
     };
 
@@ -259,9 +258,9 @@ class Game {
             for (const [e, enemy] of this.enemies) {
                 const distanceToEnemy = this.calculateDistance(defender, enemy);
                 if (distanceToEnemy <= defender.range) enemyInRange = true;
-            };
+            }
             defender.shooting = enemyInRange;
-        };
+        }
     };
 
     handleEnemies = () => {
@@ -275,8 +274,8 @@ class Game {
                 this.enemies.delete(e);
                 this.numResources += enemy.lootValue;
                 this.numKills += 1;
-            };
-        };
+            }
+        }
     
         if (this.frame % this.enemiesInterval === 0) {
             const newEnemyWidth = this.cellSize - this.cellGap * 2;
@@ -285,7 +284,7 @@ class Game {
             const newEnemy = new Enemy(veritcalPosition, newEnemyWidth, newEnemyHeight);
             this.enemies.set(newEnemy.id, newEnemy);
             if (this.enemiesInterval > 120) this.enemiesInterval -= 50;
-        };
+        }
     };
 
     handleGameStatus = () => {
@@ -300,7 +299,7 @@ class Game {
             this.ctx.fillStyle = 'black';
             this.ctx.font = '90px Arial';
             this.ctx.fillText('GAME OVER', 135, 330);
-        };
+        }
     };
 };
 
