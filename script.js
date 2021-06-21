@@ -1,28 +1,30 @@
 class Configuration {
-    constructor(cellSize, canvasWidth, canvasHeight) {
-        this.CELL_SIZE = cellSize;
-        this.CELL_GAP = 2;
-        this.CANVAS_WIDTH = canvasWidth;
-        this.CANVAS_HEIGHT = canvasHeight;
+    constructor() {
+        this.CELL_SIZE = 50;
+        this.CELL_GAP = 0;
+        this.CANVAS_WIDTH = 900;
+        this.CANVAS_HEIGHT = 600;
         this.DEFENDER_COST = 100;
         this.ENEMY_SPAWN_INTERVAL = 600;
+        this.ENEMY_STARTING_POPULATION = 100;
+        this.STARTING_WAVE_SIZE = 10;
+        this.WAVE_GROWTH = 3;
         this.PLAYER_STARTING_RESOURCES = 300;
         this.MOUSE_CONFIG = {
             MOUSE_STARTING_X: 10,
             MOUSE_STARTING_Y: 10,
             MOUSE_WIDTH: 0.1,
             MOUSE_HEIGHT:0.1,
-        };
-        
+        };       
     }
 };
 
 class Cell {
-    constructor(x, y) {
+    constructor(x, y, size) {
         this.x = x;
         this.y = y;
-        this.width = this.cellSize;
-        this.height = this.cellSize;
+        this.width = size;
+        this.height = size;
     };
 
     draw(ctx, mouse, collisionDetection) {
@@ -87,7 +89,7 @@ class Defender {
         if (this.shooting) {
             this.timer += 1;
             if (this.timer % 100 === 0) {
-                projectiles.push(new Projectile(this.x + 50, this.y + 50));
+                projectiles.push(new Projectile(this.x + (this.width / 2), this.y + (this.height / 2)));
             }
         } else {
             this.timer = 0;
@@ -143,6 +145,8 @@ class Game {
         this.enemiesInterval = config.ENEMY_SPAWN_INTERVAL;
         this.numResources = config.PLAYER_STARTING_RESOURCES;
         this.defenderCost = config.DEFENDER_COST;
+        this.waveSize = config.STARTING_WAVE_SIZE;
+        this.waveGrowthSize = config.WAVE_GROWTH;
         this.waveCount = 1;
         this.numKills = 0;
         this.frame = 0;
@@ -151,7 +155,7 @@ class Game {
         this.gameGrid = [];
         for (let y = this.cellSize; y < this.canvas.height; y += this.cellSize) {
             for (let x = 0; x < this.canvas.width; x += this.cellSize) {
-                this.gameGrid.push(new Cell(x, y));
+                this.gameGrid.push(new Cell(x, y, this.cellSize));
             };
         };
 
@@ -194,10 +198,10 @@ class Game {
     };
 
     collisionDetection = (first, second) => {
-        if (first.x >= second.x + second.width ||
-            second.x >= first.x + first.width ||
-            first.y >= second.y + second.height ||
-            second.y >= first.y + first.height) {
+        if (first.x > second.x + second.width ||
+            second.x > first.x + first.width ||
+            first.y > second.y + second.height ||
+            second.y > first.y + first.height) {
             return false;
         };
         return true;
@@ -292,6 +296,6 @@ class Game {
     };
 };
 
-config = new Configuration(100, 900, 600);
+config = new Configuration();
 game = new Game(config);
 game.start();
