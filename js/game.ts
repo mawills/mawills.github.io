@@ -226,6 +226,16 @@ export default class Game {
       }
       if (enemy.health <= 0) {
         this.enemies.delete(key);
+        this.floatingTexts.push(
+          new FloatingText(
+            this,
+            "+" + enemy.lootValue,
+            enemy.x,
+            enemy.y,
+            15,
+            "black"
+          )
+        );
         this.numResources += enemy.lootValue;
         this.numKills += 1;
       }
