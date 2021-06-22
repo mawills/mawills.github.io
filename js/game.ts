@@ -31,6 +31,8 @@ export default class Game {
   frame: number;
   gameOver: boolean;
   gameGrid: Cell[];
+  nextWaveButton: HTMLButtonElement;
+  waveInProgress: boolean;
 
   constructor(config: Configuration) {
     this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
@@ -57,6 +59,10 @@ export default class Game {
     this.numKills = 0;
     this.frame = 0;
     this.gameOver = false;
+    this.nextWaveButton = <HTMLButtonElement>(
+      document.getElementById("next-wave")
+    );
+    this.waveInProgress = false;
 
     this.gameGrid = [];
     for (let y = this.cellSize; y < this.canvas.height; y += this.cellSize) {
@@ -72,6 +78,12 @@ export default class Game {
     this.canvas.addEventListener("mouseleave", () => {
       this.mouse.x = undefined;
       this.mouse.y = undefined;
+    });
+    this.nextWaveButton.addEventListener("click", () => {
+      this.waveInProgress = !this.waveInProgress;
+      this.nextWaveButton.classList.contains("button-red")
+        ? this.nextWaveButton.classList.remove("button-red")
+        : this.nextWaveButton.classList.add("button-red");
     });
     this.canvas.addEventListener("click", () => {
       const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
@@ -192,7 +204,7 @@ export default class Game {
       }
     });
 
-    if (this.frame % this.enemiesInterval === 0) {
+    if (this.waveInProgress && this.frame % this.enemiesInterval === 0) {
       const newEnemyWidth = this.cellSize - this.cellGap * 2;
       const newEnemyHeight = newEnemyWidth;
       const veritcalPosition = Math.floor(
