@@ -4,6 +4,7 @@ import Defender from "./defender";
 import Enemy from "./enemy";
 import Projectile from "./projectile";
 import Configuration from "./configuration";
+import FloatingText from "./floatingText";
 
 interface ControlsBar {
   width: number;
@@ -33,6 +34,7 @@ export default class Game {
   gameGrid: Cell[];
   nextWaveButton: HTMLButtonElement;
   waveInProgress: boolean;
+  floatingTexts: FloatingText[];
 
   constructor(config: Configuration) {
     this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
@@ -63,50 +65,12 @@ export default class Game {
       document.getElementById("next-wave")
     );
     this.waveInProgress = false;
-
+    this.floatingTexts = [];
     this.gameGrid = [];
-    for (let y = this.cellSize; y < this.canvas.height; y += this.cellSize) {
-      for (let x = 0; x < this.canvas.width; x += this.cellSize) {
-        this.gameGrid.push(new Cell(x, y, this.cellSize));
-      }
-    }
 
-    this.canvas.addEventListener("mousemove", (e) => {
-      this.mouse.x = e.x - this.canvasPosition.left;
-      this.mouse.y = e.y - this.canvasPosition.top;
-    });
-    this.canvas.addEventListener("mouseleave", () => {
-      this.mouse.x = undefined;
-      this.mouse.y = undefined;
-    });
-    this.nextWaveButton.addEventListener("click", () => {
-      this.waveInProgress = !this.waveInProgress;
-      this.nextWaveButton.classList.contains("button-red")
-        ? this.nextWaveButton.classList.remove("button-red")
-        : this.nextWaveButton.classList.add("button-red");
-    });
-    this.canvas.addEventListener("click", () => {
-      const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
-      const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
-      const positionString =
-        String(gridPositionX) + "," + String(gridPositionY);
-      if (gridPositionY < this.cellSize) return;
-      if (this.defenders.has(positionString)) return;
-      if (this.numResources >= this.defenderCost) {
-        const newDefenderWidth = this.cellSize - this.cellGap * 2;
-        const newDefederHeight = newDefenderWidth;
-        this.defenders.set(
-          positionString,
-          new Defender(
-            gridPositionX,
-            gridPositionY,
-            newDefenderWidth,
-            newDefederHeight
-          )
-        );
-        this.numResources -= this.defenderCost;
-      }
-    });
+    this.populateGrid();
+    this.handleMouseMovement();
+    this.handleClicks();
   }
 
   start = () => {
@@ -120,6 +84,7 @@ export default class Game {
     this.handleProjectiles();
     this.handleEnemies();
     this.handleGameStatus();
+    this.handleFloatingTexts();
     this.frame += 1;
     if (!this.gameOver) requestAnimationFrame(this.animate);
   };
@@ -146,6 +111,68 @@ export default class Game {
     const deltaX = Math.abs(first.x - second.x);
     const deltaY = Math.abs(first.y - second.y);
     return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+  };
+
+  handleMouseMovement = () => {
+    this.canvas.addEventListener("mousemove", (e) => {
+      this.mouse.x = e.x - this.canvasPosition.left;
+      this.mouse.y = e.y - this.canvasPosition.top;
+    });
+    this.canvas.addEventListener("mouseleave", () => {
+      this.mouse.x = undefined;
+      this.mouse.y = undefined;
+    });
+  };
+
+  handleClicks = () => {
+    this.canvas.addEventListener("click", () => {
+      const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
+      const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
+      const positionString =
+        String(gridPositionX) + "," + String(gridPositionY);
+      if (gridPositionY < this.cellSize) return;
+      if (this.defenders.has(positionString)) return;
+      if (this.numResources >= this.defenderCost) {
+        const newDefenderWidth = this.cellSize - this.cellGap * 2;
+        const newDefederHeight = newDefenderWidth;
+        this.defenders.set(
+          positionString,
+          new Defender(
+            gridPositionX,
+            gridPositionY,
+            newDefenderWidth,
+            newDefederHeight
+          )
+        );
+        this.numResources -= this.defenderCost;
+      } else {
+        this.floatingTexts.push(
+          new FloatingText(
+            this,
+            "Insufficient Resources",
+            this.mouse.x,
+            this.mouse.y,
+            15,
+            "red"
+          )
+        );
+      }
+    });
+
+    this.nextWaveButton.addEventListener("click", () => {
+      this.waveInProgress = !this.waveInProgress;
+      this.nextWaveButton.classList.contains("button-red")
+        ? this.nextWaveButton.classList.remove("button-red")
+        : this.nextWaveButton.classList.add("button-red");
+    });
+  };
+
+  populateGrid = () => {
+    for (let y = this.cellSize; y < this.canvas.height; y += this.cellSize) {
+      for (let x = 0; x < this.canvas.width; x += this.cellSize) {
+        this.gameGrid.push(new Cell(x, y, this.cellSize));
+      }
+    }
   };
 
   handleGameGrid = () => {
@@ -236,5 +263,17 @@ export default class Game {
       this.ctx.font = "90px Arial";
       this.ctx.fillText("GAME OVER", 135, 330);
     }
+  };
+
+  handleFloatingTexts = () => {
+    let temp: FloatingText[] = [];
+    this.floatingTexts.forEach((floatingText) => {
+      floatingText.update();
+      floatingText.draw();
+      if (floatingText.lifespan < 50) {
+        temp.push(floatingText);
+      }
+    });
+    this.floatingTexts = temp;
   };
 }
