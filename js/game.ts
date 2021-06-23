@@ -113,10 +113,10 @@ export default class Game {
     if (!this.gameOver) requestAnimationFrame(this.animate);
   };
 
-  collisionDetection = (
+  collisionDetection(
     first: Tower | Alien | Projectile | Mouse,
     second: Tower | Alien | Projectile | Mouse
-  ) => {
+  ) {
     if (
       first.x >= second.x + second.width ||
       second.x >= first.x + first.width ||
@@ -126,7 +126,7 @@ export default class Game {
       return false;
     }
     return true;
-  };
+  }
 
   calculateDistance(
     first: Tower | Alien | Projectile,
@@ -203,14 +203,14 @@ export default class Game {
   populateGrid = () => {
     for (let y = this.cellSize; y < this.canvas.height; y += this.cellSize) {
       for (let x = 0; x < this.canvas.width; x += this.cellSize) {
-        this.grid.push(new Cell(x, y, this.cellSize));
+        this.grid.push(new Cell(this, x, y, this.cellSize));
       }
     }
   };
 
   handleGrid = () => {
     for (const cell of this.grid) {
-      cell.draw(this.ctx, this.mouse, this.collisionDetection);
+      cell.draw();
     }
   };
 

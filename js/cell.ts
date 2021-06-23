@@ -1,26 +1,28 @@
-import Mouse from "./mouse";
+import Game from "./game";
 
 export default class Cell {
+  game: Game;
   x: number;
   y: number;
   width: number;
   height: number;
 
-  constructor(x: number, y: number, size: number) {
+  constructor(game: Game, x: number, y: number, size: number) {
+    this.game = game;
     this.x = x;
     this.y = y;
     this.width = size;
     this.height = size;
   }
 
-  draw(
-    ctx: CanvasRenderingContext2D,
-    mouse: Mouse,
-    collisionDetection: Function
-  ) {
-    if (mouse.x && mouse.y && collisionDetection(this, mouse)) {
-      ctx.strokeStyle = "black";
-      ctx.strokeRect(this.x, this.y, this.width, this.height);
+  draw() {
+    if (
+      this.game.mouse.x &&
+      this.game.mouse.y &&
+      this.game.collisionDetection(this, this.game.mouse)
+    ) {
+      this.game.ctx.strokeStyle = "black";
+      this.game.ctx.strokeRect(this.x, this.y, this.width, this.height);
     }
   }
 }
