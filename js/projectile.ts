@@ -4,12 +4,15 @@ export default class Projectile {
   game: Game;
   x: number;
   y: number;
+  startingX: number;
+  startingY: number;
   width: number;
   height: number;
   power: number;
   speed: number;
   range: number;
   angle: number;
+  destroyed: boolean;
 
   constructor(
     game: Game,
@@ -23,17 +26,51 @@ export default class Projectile {
     this.game = game;
     this.x = x;
     this.y = y;
+    this.startingX = x;
+    this.startingY = y;
     this.angle = angle;
     this.speed = speed;
     this.power = power;
     this.range = range;
     this.width = 10;
     this.height = 10;
+    this.destroyed = false;
+  }
+
+  checkOutOfRange(): boolean {
+    const deltaX = Math.abs(this.x - this.startingX);
+    const deltaY = Math.abs(this.y - this.startingY);
+    const dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+
+    return dist > this.range;
+  }
+
+  checkIfDestroyed() {
+    this.game.enemies.forEach((enemy) => {
+      if (this.game.collisionDetection(this, enemy)) {
+        enemy.health -= this.power;
+        this.destroyed = true;
+        return;
+      }
+    });
+
+    if (
+      this.x > this.game.canvas.width - this.game.cellSize ||
+      this.x < 0 ||
+      this.y > this.game.canvas.height ||
+      this.y < 0
+    ) {
+      this.destroyed = true;
+      return;
+    }
+
+    if (this.checkOutOfRange()) this.destroyed = true;
   }
 
   update() {
     this.x += this.speed * Math.cos(this.angle);
     this.y += this.speed * Math.sin(this.angle);
+    this.checkIfDestroyed();
   }
 
   draw() {

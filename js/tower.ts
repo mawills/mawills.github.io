@@ -9,7 +9,6 @@ export default class Tower {
   y: number;
   width: number;
   height: number;
-  health: number;
   range: number;
   power: number;
   projectileSpeed: number;
@@ -18,7 +17,17 @@ export default class Tower {
   angle: number;
   target: Enemy | null;
 
-  constructor(game: Game, x: number, y: number, width: number, height: number) {
+  constructor(
+    game: Game,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    range: number,
+    cooldown: number,
+    projectileSpeed: number,
+    power: number
+  ) {
     this.game = game;
 
     // location
@@ -30,11 +39,10 @@ export default class Tower {
     this.height = height;
 
     // stats
-    this.health = 100;
-    this.range = 200;
-    this.cooldown = 800;
-    this.projectileSpeed = 5;
-    this.power = 20;
+    this.range = range;
+    this.cooldown = cooldown;
+    this.projectileSpeed = projectileSpeed;
+    this.power = power;
 
     // attack
     this.angle = 0;
@@ -42,21 +50,12 @@ export default class Tower {
     this.lastFired = Date.now();
   }
 
-  calculateDistance(
-    first: Tower | Enemy | Projectile,
-    second: Tower | Enemy | Projectile
-  ) {
-    const deltaX = Math.abs(first.x - second.x);
-    const deltaY = Math.abs(first.y - second.y);
-    return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-  }
-
   findTarget() {
     if (this.target && !this.game.enemies.has(this.target.id))
       this.target = null;
     if (!this.target) {
       this.game.enemies.forEach((enemy) => {
-        if (this.calculateDistance(this, enemy) < this.range) {
+        if (this.game.calculateDistance(this, enemy) < this.range) {
           this.target = enemy;
           return;
         }
@@ -75,7 +74,7 @@ export default class Tower {
   checkFire() {
     if (this.target) {
       const now = Date.now();
-      const distanceToTarget = this.calculateDistance(this, this.target);
+      const distanceToTarget = this.game.calculateDistance(this, this.target);
       if (this.range > distanceToTarget) {
         if (now - this.lastFired > this.cooldown) {
           this.game.projectiles.push(
@@ -86,7 +85,7 @@ export default class Tower {
               this.angle,
               this.projectileSpeed,
               this.power,
-              this.range
+              2000
             )
           );
           this.lastFired = now;

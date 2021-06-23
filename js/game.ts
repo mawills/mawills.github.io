@@ -114,6 +114,15 @@ export default class Game {
     return true;
   };
 
+  calculateDistance(
+    first: Tower | Enemy | Projectile,
+    second: Tower | Enemy | Projectile
+  ) {
+    const deltaX = Math.abs(first.x - second.x);
+    const deltaY = Math.abs(first.y - second.y);
+    return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+  }
+
   handleMouseMovement = () => {
     const canvasPosition = this.canvas.getBoundingClientRect();
     this.canvas.addEventListener("mousemove", (e) => {
@@ -130,21 +139,22 @@ export default class Game {
     this.canvas.addEventListener("click", () => {
       const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
       const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
-      const positionString =
-        String(gridPositionX) + "," + String(gridPositionY);
+      const towerId = gridPositionX + "," + gridPositionY;
       if (gridPositionY < this.cellSize) return;
-      if (this.towers.has(positionString)) return;
+      if (this.towers.has(towerId)) return;
       if (this.numResources >= this.towerCost) {
-        const newTowerWidth = this.cellSize - this.cellGap * 2;
-        const newTowerHeight = newTowerWidth;
         this.towers.set(
-          positionString,
+          towerId,
           new Tower(
             this,
             gridPositionX,
             gridPositionY,
-            newTowerWidth,
-            newTowerHeight
+            this.cellSize - this.cellGap * 2,
+            this.cellSize - this.cellGap * 2,
+            200,
+            400,
+            2,
+            5
           )
         );
         this.numResources -= this.towerCost;
@@ -195,25 +205,12 @@ export default class Game {
   };
 
   handleProjectiles = () => {
-    let temp = [];
-    for (const projectile of this.projectiles) {
+    let temp: Projectile[] = [];
+    this.projectiles.forEach((projectile) => {
       projectile.update();
       projectile.draw();
-
-      let projectileDestroyed = false;
-      this.enemies.forEach((enemy) => {
-        if (this.collisionDetection(projectile, enemy)) {
-          enemy.health -= projectile.power;
-          projectileDestroyed = true;
-        }
-      });
-
-      if (projectile.x > this.canvas.width - this.cellSize) {
-        projectileDestroyed = true;
-      }
-
-      if (!projectileDestroyed) temp.push(projectile);
-    }
+      if (!projectile.destroyed) temp.push(projectile);
+    });
     this.projectiles = temp;
   };
 
