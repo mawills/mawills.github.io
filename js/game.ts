@@ -1,6 +1,6 @@
 import Cell from "./cell";
 import Mouse from "./mouse";
-import Defender from "./defender";
+import Tower from "./tower";
 import Enemy from "./enemy";
 import Projectile from "./projectile";
 import Configuration from "./configuration";
@@ -17,14 +17,14 @@ export default class Game {
   canvasPosition: ClientRect;
   cellSize: number;
   cellGap: number;
-  defenders: Map<string, Defender>;
+  towers: Map<string, Tower>;
   enemies: Map<number, Enemy>;
   projectiles: Projectile[];
   controlsBar: ControlsBar;
   mouse: Mouse;
   enemiesInterval: number;
   numResources: number;
-  defenderCost: number;
+  towerCost: number;
   waveSize: number;
   waveGrowthSize: number;
   waveCount: number;
@@ -44,7 +44,7 @@ export default class Game {
     this.canvasPosition = this.canvas.getBoundingClientRect();
     this.cellSize = config.CELL_SIZE;
     this.cellGap = config.CELL_GAP;
-    this.defenders = new Map();
+    this.towers = new Map();
     this.enemies = new Map();
     this.projectiles = [];
     this.controlsBar = {
@@ -54,7 +54,7 @@ export default class Game {
     this.mouse = new Mouse(config);
     this.enemiesInterval = config.ENEMY_SPAWN_INTERVAL;
     this.numResources = config.PLAYER_STARTING_RESOURCES;
-    this.defenderCost = config.DEFENDER_COST;
+    this.towerCost = config.TOWER_COST;
     this.waveSize = config.STARTING_WAVE_SIZE;
     this.waveGrowthSize = config.WAVE_GROWTH;
     this.waveCount = 1;
@@ -80,7 +80,7 @@ export default class Game {
   animate = () => {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.handleGameGrid();
-    this.handleDefenders();
+    this.handleTowers();
     this.handleProjectiles();
     this.handleEnemies();
     this.handleGameStatus();
@@ -90,8 +90,8 @@ export default class Game {
   };
 
   collisionDetection = (
-    first: Defender | Enemy | Projectile,
-    second: Defender | Enemy | Projectile
+    first: Tower | Enemy | Projectile | Mouse,
+    second: Tower | Enemy | Projectile | Mouse
   ) => {
     if (
       first.x >= second.x + second.width ||
@@ -105,8 +105,8 @@ export default class Game {
   };
 
   calculateDistance = (
-    first: Defender | Enemy | Projectile,
-    second: Defender | Enemy | Projectile
+    first: Tower | Enemy | Projectile,
+    second: Tower | Enemy | Projectile
   ) => {
     const deltaX = Math.abs(first.x - second.x);
     const deltaY = Math.abs(first.y - second.y);
@@ -131,20 +131,21 @@ export default class Game {
       const positionString =
         String(gridPositionX) + "," + String(gridPositionY);
       if (gridPositionY < this.cellSize) return;
-      if (this.defenders.has(positionString)) return;
-      if (this.numResources >= this.defenderCost) {
-        const newDefenderWidth = this.cellSize - this.cellGap * 2;
-        const newDefederHeight = newDefenderWidth;
-        this.defenders.set(
+      if (this.towers.has(positionString)) return;
+      if (this.numResources >= this.towerCost) {
+        const newTowerWidth = this.cellSize - this.cellGap * 2;
+        const newTowerHeight = newTowerWidth;
+        this.towers.set(
           positionString,
-          new Defender(
+          new Tower(
+            this,
             gridPositionX,
             gridPositionY,
-            newDefenderWidth,
-            newDefederHeight
+            newTowerWidth,
+            newTowerHeight
           )
         );
-        this.numResources -= this.defenderCost;
+        this.numResources -= this.towerCost;
       } else {
         this.floatingTexts.push(
           new FloatingText(
@@ -204,16 +205,10 @@ export default class Game {
     this.projectiles = temp;
   };
 
-  handleDefenders = () => {
-    this.defenders.forEach((defender) => {
-      defender.update(this.projectiles);
-      defender.draw(this.ctx, this.mouse, this.collisionDetection);
-      let enemyInRange = false;
-      this.enemies.forEach((enemy) => {
-        const distanceToEnemy = this.calculateDistance(defender, enemy);
-        if (distanceToEnemy <= defender.range) enemyInRange = true;
-      });
-      defender.shooting = enemyInRange;
+  handleTowers = () => {
+    this.towers.forEach((tower) => {
+      tower.update();
+      tower.draw();
     });
   };
 

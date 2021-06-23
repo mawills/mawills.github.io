@@ -10,7 +10,7 @@ export default class Configuration {
   CELL_GAP: number;
   CANVAS_WIDTH: number;
   CANVAS_HEIGHT: number;
-  DEFENDER_COST: number;
+  TOWER_COST: number;
   ENEMY_SPAWN_INTERVAL: number;
   ENEMY_STARTING_POPULATION: number;
   STARTING_WAVE_SIZE: number;
@@ -23,7 +23,7 @@ export default class Configuration {
     this.CELL_GAP = 0;
     this.CANVAS_WIDTH = 900;
     this.CANVAS_HEIGHT = 600;
-    this.DEFENDER_COST = 100;
+    this.TOWER_COST = 100;
     this.ENEMY_SPAWN_INTERVAL = 600;
     this.ENEMY_STARTING_POPULATION = 100;
     this.STARTING_WAVE_SIZE = 10;
