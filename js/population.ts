@@ -4,24 +4,38 @@ export default class Population {
   population: Alien[];
   maxHeight: number;
   maxWidth: number;
+  maxHealth: number;
   minHeight: number;
   minWidth: number;
+  minHealth: number;
 
   constructor(n: number) {
     this.population = [];
     this.maxHeight = 100;
-    this.minHeight = 50;
+    this.minHeight = 20;
     this.maxWidth = 100;
-    this.minWidth = 50;
+    this.minWidth = 20;
+    this.minHealth = 50;
+    this.maxHealth = 250;
     this.initializePopulation(n);
+  }
+
+  randomNumberInRange(min: number, max: number) {
+    return Math.random() * (max - min) + min;
   }
 
   initializePopulation(n: number) {
     for (let i = 0; i < n; i++) {
-      const width = Math.random() * (this.maxWidth - this.minWidth + 1);
-      const height = Math.random() * (this.maxHeight - this.minHeight + 1);
-      const veritcalPosition = Math.random() * (600 - height);
-      this.population.push(new Alien(900, veritcalPosition, width, height));
+      const height = this.randomNumberInRange(this.minHeight, this.maxHeight);
+      this.population.push(
+        new Alien(
+          this.randomNumberInRange(height, 600 - height),
+          this.randomNumberInRange(this.minWidth, this.maxWidth),
+          height,
+          this.randomNumberInRange(this.minHealth, this.maxHealth),
+          this.randomNumberInRange(0.2, 0.8)
+        )
+      );
     }
   }
 
@@ -53,5 +67,42 @@ export default class Population {
     return attackWave;
   }
 
-  reproduce() {}
+  reproduce() {
+    console.log(this.population);
+    let offspring: Alien[] = [];
+    let start = 0;
+    let mid = Math.floor(this.population.length / 2);
+    while (mid < this.population.length) {
+      const parent1 = this.population[start];
+      const parent2 = this.population[mid];
+      const height =
+        (Math.min(parent1.height, parent2.height),
+        Math.max(parent1.height, parent2.height));
+      Math.random() * (Math.abs(parent1.speed - parent2.speed) + 1);
+      offspring.push(
+        new Alien(
+          this.randomNumberInRange(height, 600 - height),
+          this.randomNumberInRange(
+            Math.min(parent1.width, parent2.width),
+            Math.max(parent1.width, parent2.width)
+          ),
+          height,
+          this.randomNumberInRange(
+            Math.min(parent1.health, parent2.health),
+            Math.max(parent1.health, parent2.health)
+          ),
+          this.randomNumberInRange(
+            Math.min(parent1.speed, parent2.speed),
+            Math.max(parent1.speed, parent2.speed)
+          )
+        )
+      );
+      start++;
+      mid++;
+    }
+
+    offspring.forEach((child) => {
+      this.population.push(child);
+    });
+  }
 }

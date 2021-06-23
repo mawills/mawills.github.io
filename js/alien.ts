@@ -11,15 +11,21 @@ export default class Alien {
   lootValue: number;
   alive: boolean;
 
-  constructor(x: number, y: number, width: number, height: number) {
+  constructor(
+    y: number,
+    width: number,
+    height: number,
+    health: number,
+    speed: number
+  ) {
     this.id = Math.random();
-    this.x = x;
+    this.x = 900;
     this.y = y;
     this.width = width;
     this.height = height;
-    this.speed = Math.random() * 0.2 + 0.4;
+    this.speed = speed;
     this.movement = this.speed;
-    this.health = 100;
+    this.health = health;
     this.maxHealth = this.health;
     this.lootValue = 20;
     this.alive = true;

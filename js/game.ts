@@ -190,13 +190,13 @@ export default class Game {
   handleNextWaveButton = () => {
     this.nextWaveButton.addEventListener("click", () => {
       if (!this.gameStarted) this.gameStarted = true;
-
       this.waveInProgress = true;
-      this.attackWave = this.population.createAttackWave(this.waveSize);
       this.waveCount += 1;
       this.waveSize += this.waveGrowthSize;
       this.nextWaveButton.disabled = true;
       this.nextWaveButton.innerText = "wave in progress";
+      this.attackWave = this.population.createAttackWave(this.waveSize);
+      if (this.waveCount > 1) this.population.reproduce();
     });
   };
 
@@ -281,7 +281,14 @@ export default class Game {
     this.ctx.font = "30px Arial";
     this.ctx.fillText("Resources: " + this.numResources, 20, 35);
     this.ctx.fillText("Kills: " + this.numKills, 270, 35);
-    this.ctx.fillText("Wave: " + this.waveCount, this.canvas.width - 150, 35);
+    this.ctx.fillText(
+      "Population: " +
+        (this.population.population.length +
+          this.aliens.size +
+          this.attackWave.length),
+      this.canvas.width - 300,
+      35
+    );
     if (this.gameOver) {
       this.ctx.fillStyle = "black";
       this.ctx.font = "90px Arial";
