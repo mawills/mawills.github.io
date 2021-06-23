@@ -46,13 +46,10 @@ export default class Projectile {
   }
 
   checkIfDestroyed() {
-    this.game.enemies.forEach((enemy) => {
-      if (this.game.collisionDetection(this, enemy)) {
-        enemy.health -= this.power;
-        this.destroyed = true;
-        return;
-      }
-    });
+    if (this.checkOutOfRange()) {
+      this.destroyed = true;
+      return;
+    }
 
     if (
       this.x > this.game.canvas.width - this.game.cellSize ||
@@ -64,7 +61,13 @@ export default class Projectile {
       return;
     }
 
-    if (this.checkOutOfRange()) this.destroyed = true;
+    this.game.enemies.forEach((enemy) => {
+      if (this.game.collisionDetection(this, enemy)) {
+        enemy.health -= this.power;
+        this.destroyed = true;
+        return;
+      }
+    });
   }
 
   update() {
