@@ -54,12 +54,14 @@ export default class Tower {
   findTarget() {
     if (this.target && !this.game.enemies.has(this.target.id))
       this.target = null;
-    this.game.enemies.forEach((enemy) => {
-      if (this.calculateDistance(this, enemy) < this.range) {
-        this.target = enemy;
-        return;
-      }
-    });
+    if (!this.target) {
+      this.game.enemies.forEach((enemy) => {
+        if (this.calculateDistance(this, enemy) < this.range) {
+          this.target = enemy;
+          return;
+        }
+      });
+    }
   }
 
   changeAngle() {
