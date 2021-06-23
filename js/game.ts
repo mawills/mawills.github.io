@@ -149,41 +149,45 @@ export default class Game {
     });
   };
 
+  placeTower() {
+    const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
+    const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
+    const towerId = gridPositionX + "," + gridPositionY;
+    if (gridPositionY < this.cellSize) return;
+    if (this.towers.has(towerId)) return;
+    if (this.numResources >= this.towerCost) {
+      this.towers.set(
+        towerId,
+        new Tower(
+          this,
+          gridPositionX,
+          gridPositionY,
+          this.cellSize - this.cellGap * 2,
+          this.cellSize - this.cellGap * 2,
+          200,
+          400,
+          2,
+          10
+        )
+      );
+      this.numResources -= this.towerCost;
+    } else {
+      this.floatingTexts.push(
+        new FloatingText(
+          this,
+          "Insufficient Resources",
+          this.mouse.x,
+          this.mouse.y,
+          15,
+          "red"
+        )
+      );
+    }
+  }
+
   handleCanvasClicks = () => {
     this.canvas.addEventListener("click", () => {
-      const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
-      const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
-      const towerId = gridPositionX + "," + gridPositionY;
-      if (gridPositionY < this.cellSize) return;
-      if (this.towers.has(towerId)) return;
-      if (this.numResources >= this.towerCost) {
-        this.towers.set(
-          towerId,
-          new Tower(
-            this,
-            gridPositionX,
-            gridPositionY,
-            this.cellSize - this.cellGap * 2,
-            this.cellSize - this.cellGap * 2,
-            200,
-            400,
-            2,
-            10
-          )
-        );
-        this.numResources -= this.towerCost;
-      } else {
-        this.floatingTexts.push(
-          new FloatingText(
-            this,
-            "Insufficient Resources",
-            this.mouse.x,
-            this.mouse.y,
-            15,
-            "red"
-          )
-        );
-      }
+      this.placeTower();
     });
   };
 
@@ -192,7 +196,7 @@ export default class Game {
       if (!this.gameStarted) this.gameStarted = true;
       this.waveInProgress = true;
       this.waveCount += 1;
-      this.waveSize += this.waveGrowthSize;
+      this.waveSize = Math.floor(this.population.population.length / 2);
       this.nextWaveButton.disabled = true;
       this.nextWaveButton.innerText = "wave in progress";
       this.attackWave = this.population.createAttackWave(this.waveSize);

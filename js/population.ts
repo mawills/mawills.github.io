@@ -5,9 +5,11 @@ export default class Population {
   maxHeight: number;
   maxWidth: number;
   maxHealth: number;
+  maxSpeed: number;
   minHeight: number;
   minWidth: number;
   minHealth: number;
+  minSpeed: number;
 
   constructor(n: number) {
     this.population = [];
@@ -17,6 +19,8 @@ export default class Population {
     this.minWidth = 20;
     this.minHealth = 50;
     this.maxHealth = 250;
+    this.minSpeed = 0.2;
+    this.maxSpeed = 1;
     this.initializePopulation(n);
   }
 
@@ -68,7 +72,6 @@ export default class Population {
   }
 
   reproduce() {
-    console.log(this.population);
     let offspring: Alien[] = [];
     let start = 0;
     let mid = Math.floor(this.population.length / 2);
