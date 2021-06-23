@@ -1,6 +1,8 @@
 import Alien from "./alien";
+import Game from "./game";
 
 export default class Population {
+  game: Game;
   population: Alien[];
   maxHeight: number;
   maxWidth: number;
@@ -11,16 +13,17 @@ export default class Population {
   minHealth: number;
   minSpeed: number;
 
-  constructor(n: number) {
+  constructor(game: Game, n: number) {
+    this.game = game;
     this.population = [];
     this.maxHeight = 100;
-    this.minHeight = 20;
+    this.minHeight = 10;
     this.maxWidth = 100;
-    this.minWidth = 20;
+    this.minWidth = 10;
     this.minHealth = 50;
-    this.maxHealth = 250;
+    this.maxHealth = 300;
     this.minSpeed = 0.2;
-    this.maxSpeed = 1;
+    this.maxSpeed = 3;
     this.initializePopulation(n);
   }
 
@@ -33,6 +36,7 @@ export default class Population {
       const height = this.randomNumberInRange(this.minHeight, this.maxHeight);
       this.population.push(
         new Alien(
+          this.game,
           this.randomNumberInRange(height, 600 - height),
           this.randomNumberInRange(this.minWidth, this.maxWidth),
           height,
@@ -84,6 +88,7 @@ export default class Population {
       Math.random() * (Math.abs(parent1.speed - parent2.speed) + 1);
       offspring.push(
         new Alien(
+          this.game,
           this.randomNumberInRange(height, 600 - height),
           this.randomNumberInRange(
             Math.min(parent1.width, parent2.width),

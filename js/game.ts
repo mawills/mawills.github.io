@@ -63,7 +63,7 @@ export default class Game {
     this.floatingTexts = [];
 
     // alien population
-    this.population = new Population(config.ENEMY_STARTING_POPULATION);
+    this.population = new Population(this, config.ENEMY_STARTING_POPULATION);
     this.attackWave = [];
 
     // stats
@@ -194,13 +194,13 @@ export default class Game {
   handleNextWaveButton = () => {
     this.nextWaveButton.addEventListener("click", () => {
       if (!this.gameStarted) this.gameStarted = true;
-      this.waveInProgress = true;
       this.waveCount += 1;
+      if (this.waveCount > 1) this.population.reproduce();
+      this.waveInProgress = true;
       this.waveSize = Math.floor(this.population.population.length / 2);
       this.nextWaveButton.disabled = true;
       this.nextWaveButton.innerText = "wave in progress";
       this.attackWave = this.population.createAttackWave(this.waveSize);
-      if (this.waveCount > 1) this.population.reproduce();
     });
   };
 
@@ -238,12 +238,13 @@ export default class Game {
   handleAliens = () => {
     this.aliens.forEach((alien, key) => {
       alien.update();
-      alien.draw(this.ctx);
+      alien.draw();
       if (alien.x + alien.width < 0) {
+        alien.x = this.canvas.width;
         this.population.population.push(alien);
         this.aliens.delete(key);
       }
-      if (!alien.alive) {
+      if (!alien.alive()) {
         this.aliens.delete(key);
         this.floatingTexts.push(
           new FloatingText(

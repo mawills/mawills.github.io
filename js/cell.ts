@@ -16,6 +16,8 @@ export default class Cell {
   }
 
   draw() {
+    this.game.ctx.save();
+
     if (
       this.game.mouse.x &&
       this.game.mouse.y &&
@@ -24,5 +26,7 @@ export default class Cell {
       this.game.ctx.strokeStyle = "black";
       this.game.ctx.strokeRect(this.x, this.y, this.width, this.height);
     }
+
+    this.game.ctx.restore();
   }
 }

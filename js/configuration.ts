@@ -26,7 +26,7 @@ export default class Configuration {
     this.CANVAS_HEIGHT = 600;
     this.TOWER_COST = 100;
     this.ENEMY_SPAWN_INTERVAL = 600;
-    this.ENEMY_STARTING_POPULATION = 100;
+    this.ENEMY_STARTING_POPULATION = 50;
     this.STARTING_WAVE_SIZE = 10;
     this.WAVE_GROWTH = 3;
     this.PLAYER_STARTING_RESOURCES = 300;
