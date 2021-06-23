@@ -43,7 +43,9 @@ export default class Game {
     this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
     this.canvas.width = config.CANVAS_WIDTH;
     this.canvas.height = config.CANVAS_HEIGHT;
-    this.ctx = this.canvas.getContext("2d");
+    let ctx = this.canvas.getContext("2d");
+    if (!ctx) throw new Error("Failed to get canvas context");
+    this.ctx = ctx;
 
     // grid
     this.cellSize = config.CELL_SIZE;
@@ -130,8 +132,8 @@ export default class Game {
       this.mouse.y = e.y - canvasPosition.top;
     });
     this.canvas.addEventListener("mouseleave", () => {
-      this.mouse.x = undefined;
-      this.mouse.y = undefined;
+      this.mouse.x = 0;
+      this.mouse.y = 0;
     });
   };
 
