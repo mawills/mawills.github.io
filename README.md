@@ -2,7 +2,7 @@
 
 A tower defense game showcasing the effects of evolution and natural selection.
 
-TODO: Insert a link to live game
+[Link to the live game](https://mawills.github.io/)
 
 An alien race will send some number of their population across the screen in waves, and you're placing different types of tower defenses (machine guns, flamethrowers, etc.) to stop as many of them as possible. Aliens can have many different properties (speed, health, fire resistance, size, color, etc.), and some will naturally be better suited to getting past your defenses than others.
 

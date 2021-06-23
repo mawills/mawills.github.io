@@ -1,5 +1,4 @@
 import Projectile from "./projectile";
-import Mouse from "./mouse";
 import Enemy from "./enemy";
 import Game from "./game";
 
