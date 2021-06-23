@@ -88,8 +88,8 @@ export default class Population {
           ),
           height,
           this.randomNumberInRange(
-            Math.min(parent1.health, parent2.health),
-            Math.max(parent1.health, parent2.health)
+            Math.min(parent1.maxHealth, parent2.maxHealth),
+            Math.max(parent1.maxHealth, parent2.maxHealth)
           ),
           this.randomNumberInRange(
             Math.min(parent1.speed, parent2.speed),
