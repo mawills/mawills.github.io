@@ -67,11 +67,13 @@ export default class Tower {
   checkFire() {
     const now = Date.now();
     const distanceToTarget = this.calculateDistance(this, this.target);
-    if (this.range > distanceToTarget && now - this.lastFired > this.cooldown) {
-      this.game.projectiles.push(
-        new Projectile(this.x + this.width / 2, this.y + this.height / 2)
-      );
-      this.lastFired = now;
+    if (this.range > distanceToTarget) {
+      if (now - this.lastFired > this.cooldown) {
+        this.game.projectiles.push(
+          new Projectile(this.x + this.width / 2, this.y + this.height / 2)
+        );
+        this.lastFired = now;
+      }
     } else {
       this.target = null;
     }
