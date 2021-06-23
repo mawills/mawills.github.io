@@ -1,10 +1,11 @@
 import Cell from "./cell";
 import Mouse from "./mouse";
 import Tower from "./tower";
-import Enemy from "./enemy";
+import Alien from "./alien";
 import Projectile from "./projectile";
 import Configuration from "./configuration";
 import FloatingText from "./floatingText";
+import Population from "./population";
 
 interface ControlsBar {
   width: number;
@@ -19,12 +20,12 @@ export default class Game {
   cellGap: number;
   grid: Cell[];
   towers: Map<string, Tower>;
-  enemies: Map<number, Enemy>;
+  aliens: Map<number, Alien>;
   projectiles: Projectile[];
   floatingTexts: FloatingText[];
   controlsBar: ControlsBar;
   mouse: Mouse;
-  enemiesInterval: number;
+  alienSpawnInterval: number;
   numResources: number;
   towerCost: number;
   waveSize: number;
@@ -35,6 +36,10 @@ export default class Game {
   gameOver: boolean;
   nextWaveButton: HTMLButtonElement;
   waveInProgress: boolean;
+  population: Population;
+  alienSurvivors: Alien[];
+  alienReserves: Alien[];
+  gameStarted: boolean;
 
   constructor(config: Configuration) {
     this.config = config;
@@ -54,9 +59,14 @@ export default class Game {
 
     // game objects
     this.towers = new Map();
-    this.enemies = new Map();
+    this.aliens = new Map();
     this.projectiles = [];
     this.floatingTexts = [];
+
+    // alien population
+    this.population = new Population(config.ENEMY_STARTING_POPULATION);
+    this.alienSurvivors = [];
+    this.alienReserves = [];
 
     // stats
     this.numResources = config.PLAYER_STARTING_RESOURCES;
@@ -68,7 +78,7 @@ export default class Game {
       height: this.cellSize,
     };
     this.mouse = new Mouse(config);
-    this.enemiesInterval = config.ENEMY_SPAWN_INTERVAL;
+    this.alienSpawnInterval = config.ENEMY_SPAWN_INTERVAL;
     this.towerCost = config.TOWER_COST;
     this.waveSize = config.STARTING_WAVE_SIZE;
     this.waveGrowthSize = config.WAVE_GROWTH;
@@ -78,6 +88,7 @@ export default class Game {
       document.getElementById("next-wave")
     );
     this.waveInProgress = false;
+    this.gameStarted = false;
 
     this.populateGrid();
     this.handleMouseMovement();
@@ -94,16 +105,17 @@ export default class Game {
     this.handleGrid();
     this.handleTowers();
     this.handleProjectiles();
-    this.handleEnemies();
+    this.handleAliens();
     this.handleGameStatus();
     this.handleFloatingTexts();
+    this.handleAttackWave();
     this.frame += 1;
     if (!this.gameOver) requestAnimationFrame(this.animate);
   };
 
   collisionDetection = (
-    first: Tower | Enemy | Projectile | Mouse,
-    second: Tower | Enemy | Projectile | Mouse
+    first: Tower | Alien | Projectile | Mouse,
+    second: Tower | Alien | Projectile | Mouse
   ) => {
     if (
       first.x >= second.x + second.width ||
@@ -117,8 +129,8 @@ export default class Game {
   };
 
   calculateDistance(
-    first: Tower | Enemy | Projectile,
-    second: Tower | Enemy | Projectile
+    first: Tower | Alien | Projectile,
+    second: Tower | Alien | Projectile
   ) {
     const deltaX = Math.abs(first.x - second.x);
     const deltaY = Math.abs(first.y - second.y);
@@ -156,7 +168,7 @@ export default class Game {
             200,
             400,
             2,
-            5
+            10
           )
         );
         this.numResources -= this.towerCost;
@@ -177,18 +189,20 @@ export default class Game {
 
   handleNextWaveButton = () => {
     this.nextWaveButton.addEventListener("click", () => {
-      this.waveInProgress = !this.waveInProgress;
+      console.log(
+        this.gameStarted,
+        this.waveInProgress,
+        this.aliens,
+        this.alienReserves
+      );
+      if (!this.gameStarted) this.gameStarted = true;
 
-      if (this.waveInProgress) {
-        this.waveCount += 1;
-        this.nextWaveButton.innerText = "stop wave";
-      } else {
-        this.nextWaveButton.innerText = "next wave";
-      }
-
-      this.nextWaveButton.classList.contains("button-red")
-        ? this.nextWaveButton.classList.remove("button-red")
-        : this.nextWaveButton.classList.add("button-red");
+      this.waveInProgress = true;
+      this.alienReserves = this.population.createAttackWave(this.waveSize);
+      this.waveCount += 1;
+      this.waveSize += this.waveGrowthSize;
+      this.nextWaveButton.disabled = true;
+      this.nextWaveButton.innerText = "wave in progress";
     });
   };
 
@@ -223,50 +237,49 @@ export default class Game {
     });
   };
 
-  handleEnemies = () => {
-    this.enemies.forEach((enemy, key) => {
-      enemy.update();
-      enemy.draw(this.ctx);
-      if (enemy.x + enemy.width < 0) {
-        this.enemies.delete(key);
+  handleAliens = () => {
+    this.aliens.forEach((alien, key) => {
+      alien.update();
+      alien.draw(this.ctx);
+      if (alien.x + alien.width < 0) {
+        this.aliens.delete(key);
       }
-      if (enemy.health <= 0) {
-        this.enemies.delete(key);
+      if (!alien.alive) {
+        this.aliens.delete(key);
         this.floatingTexts.push(
           new FloatingText(
             this,
-            "+" + enemy.lootValue,
-            enemy.x,
-            enemy.y,
+            "+" + alien.lootValue,
+            alien.x,
+            alien.y,
             15,
             "black"
           )
         );
-        this.numResources += enemy.lootValue;
+        this.numResources += alien.lootValue;
         this.numKills += 1;
       }
     });
 
-    if (this.waveInProgress && this.frame % this.enemiesInterval === 0) {
-      const newEnemyWidth = this.cellSize - this.cellGap * 2;
-      const newEnemyHeight = newEnemyWidth;
-      const veritcalPosition = Math.floor(
-        Math.random() *
-          (this.canvas.height - this.controlsBar.height / this.cellSize) -
-          newEnemyHeight
-      );
-      const newEnemy = new Enemy(
-        this.canvas.width,
-        veritcalPosition,
-        newEnemyWidth,
-        newEnemyHeight
-      );
-      this.enemies.set(newEnemy.id, newEnemy);
-      if (this.enemiesInterval > 120) this.enemiesInterval -= 50;
+    if (this.waveInProgress && this.frame % this.alienSpawnInterval === 0) {
+      let temp = this.alienReserves.pop();
+      if (temp) this.aliens.set(temp.id, temp);
+      if (this.alienSpawnInterval > 120) this.alienSpawnInterval -= 50;
+    }
+  };
+
+  handleAttackWave = () => {
+    if (this.alienReserves.length == 0 && this.aliens.size == 0) {
+      this.waveInProgress = false;
     }
   };
 
   handleGameStatus = () => {
+    if (this.gameStarted && !this.waveInProgress) {
+      this.nextWaveButton.disabled = false;
+      this.nextWaveButton.innerText = "next wave";
+    }
+
     this.ctx.fillStyle = "blue";
     this.ctx.fillRect(0, 0, this.controlsBar.width, this.controlsBar.height);
     this.ctx.fillStyle = "gold";

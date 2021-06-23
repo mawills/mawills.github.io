@@ -1,5 +1,5 @@
 import Projectile from "./projectile";
-import Enemy from "./enemy";
+import Alien from "./alien";
 import Game from "./game";
 
 export default class Tower {
@@ -14,7 +14,7 @@ export default class Tower {
   cooldown: number;
   lastFired: number;
   angle: number;
-  target: Enemy | null;
+  target: Alien | null;
 
   constructor(
     game: Game,
@@ -50,12 +50,12 @@ export default class Tower {
   }
 
   findTarget() {
-    if (this.target && !this.game.enemies.has(this.target.id))
+    if (this.target && !this.game.aliens.has(this.target.id))
       this.target = null;
     if (!this.target) {
-      this.game.enemies.forEach((enemy) => {
-        if (this.game.calculateDistance(this, enemy) < this.range) {
-          this.target = enemy;
+      this.game.aliens.forEach((alien) => {
+        if (this.game.calculateDistance(this, alien) < this.range) {
+          this.target = alien;
           return;
         }
       });

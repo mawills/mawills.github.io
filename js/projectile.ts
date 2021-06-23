@@ -61,9 +61,9 @@ export default class Projectile {
       return;
     }
 
-    this.game.enemies.forEach((enemy) => {
-      if (this.game.collisionDetection(this, enemy)) {
-        enemy.health -= this.power;
+    this.game.aliens.forEach((alien) => {
+      if (this.game.collisionDetection(this, alien)) {
+        alien.health -= this.power;
         this.destroyed = true;
         return;
       }

@@ -1,4 +1,4 @@
-export default class Enemy {
+export default class Alien {
   id: number;
   x: number;
   y: number;
@@ -9,6 +9,7 @@ export default class Enemy {
   health: number;
   maxHealth: number;
   lootValue: number;
+  alive: boolean;
 
   constructor(x: number, y: number, width: number, height: number) {
     this.id = Math.random();
@@ -21,10 +22,16 @@ export default class Enemy {
     this.health = 100;
     this.maxHealth = this.health;
     this.lootValue = 20;
+    this.alive = true;
+  }
+
+  checkAlive() {
+    if (this.health <= 0) this.alive = false;
   }
 
   update() {
     this.x -= this.movement;
+    this.checkAlive();
   }
 
   draw(ctx: CanvasRenderingContext2D) {
