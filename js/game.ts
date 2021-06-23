@@ -186,7 +186,7 @@ export default class Game {
     let temp = [];
     for (const projectile of this.projectiles) {
       projectile.update();
-      projectile.draw(this.ctx);
+      projectile.draw();
 
       let projectileDestroyed = false;
       this.enemies.forEach((enemy) => {

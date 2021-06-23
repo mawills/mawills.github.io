@@ -11,6 +11,8 @@ export default class Tower {
   height: number;
   health: number;
   range: number;
+  power: number;
+  projectileSpeed: number;
   cooldown: number;
   lastFired: number;
   angle: number;
@@ -31,6 +33,8 @@ export default class Tower {
     this.health = 100;
     this.range = 200;
     this.cooldown = 500;
+    this.projectileSpeed = 5;
+    this.power = 20;
 
     // attack
     this.angle = 0;
@@ -48,6 +52,8 @@ export default class Tower {
   }
 
   findTarget() {
+    if (this.target && !this.game.enemies.has(this.target.id))
+      this.target = null;
     this.game.enemies.forEach((enemy) => {
       if (this.calculateDistance(this, enemy) < this.range) {
         this.target = enemy;
@@ -65,17 +71,27 @@ export default class Tower {
   }
 
   checkFire() {
-    const now = Date.now();
-    const distanceToTarget = this.calculateDistance(this, this.target);
-    if (this.range > distanceToTarget) {
-      if (now - this.lastFired > this.cooldown) {
-        this.game.projectiles.push(
-          new Projectile(this.x + this.width / 2, this.y + this.height / 2)
-        );
-        this.lastFired = now;
+    if (this.target) {
+      const now = Date.now();
+      const distanceToTarget = this.calculateDistance(this, this.target);
+      if (this.range > distanceToTarget) {
+        if (now - this.lastFired > this.cooldown) {
+          this.game.projectiles.push(
+            new Projectile(
+              this.game,
+              this.x + this.width / 2,
+              this.y + this.height / 2,
+              this.angle,
+              this.projectileSpeed,
+              this.power,
+              this.range
+            )
+          );
+          this.lastFired = now;
+        }
+      } else {
+        this.target = null;
       }
-    } else {
-      this.target = null;
     }
   }
 
@@ -114,11 +130,8 @@ export default class Tower {
   }
 
   update() {
-    if (!this.target) {
-      this.findTarget();
-    } else {
-      this.changeAngle();
-      this.checkFire();
-    }
+    this.findTarget();
+    this.changeAngle();
+    this.checkFire();
   }
 }
