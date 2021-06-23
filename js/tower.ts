@@ -32,7 +32,7 @@ export default class Tower {
     // stats
     this.health = 100;
     this.range = 200;
-    this.cooldown = 500;
+    this.cooldown = 800;
     this.projectileSpeed = 5;
     this.power = 20;
 
@@ -106,13 +106,9 @@ export default class Tower {
       -(this.y + this.height / 2)
     );
     this.game.ctx.fillRect(this.x, this.y, this.width, this.height);
-    this.game.ctx.fillStyle = "gold";
+    this.game.ctx.fillStyle = "black";
     this.game.ctx.font = "30px Arial";
-    this.game.ctx.fillText(
-      String(Math.floor(this.health)),
-      this.x + 15,
-      this.y + 30
-    );
+    this.game.ctx.fillText("===", this.x + 15, this.y + 30);
     if (
       this.game.mouse.x &&
       this.game.mouse.y &&

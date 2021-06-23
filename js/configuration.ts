@@ -17,6 +17,7 @@ export default class Configuration {
   WAVE_GROWTH: number;
   PLAYER_STARTING_RESOURCES: number;
   MOUSE_CONFIG: MouseConfig;
+  FLOATING_TEXT_LIFESPAN: number;
 
   constructor() {
     this.CELL_SIZE = 50;
@@ -29,6 +30,7 @@ export default class Configuration {
     this.STARTING_WAVE_SIZE = 10;
     this.WAVE_GROWTH = 3;
     this.PLAYER_STARTING_RESOURCES = 300;
+    this.FLOATING_TEXT_LIFESPAN = 50;
     this.MOUSE_CONFIG = {
       MOUSE_STARTING_X: 10,
       MOUSE_STARTING_Y: 10,

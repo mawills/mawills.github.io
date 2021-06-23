@@ -12,14 +12,16 @@ interface ControlsBar {
 }
 
 export default class Game {
+  config: Configuration;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  canvasPosition: ClientRect;
   cellSize: number;
   cellGap: number;
+  grid: Cell[];
   towers: Map<string, Tower>;
   enemies: Map<number, Enemy>;
   projectiles: Projectile[];
+  floatingTexts: FloatingText[];
   controlsBar: ControlsBar;
   mouse: Mouse;
   enemiesInterval: number;
@@ -31,46 +33,54 @@ export default class Game {
   numKills: number;
   frame: number;
   gameOver: boolean;
-  gameGrid: Cell[];
   nextWaveButton: HTMLButtonElement;
   waveInProgress: boolean;
-  floatingTexts: FloatingText[];
 
   constructor(config: Configuration) {
+    this.config = config;
+
+    // canvas
     this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
     this.canvas.width = config.CANVAS_WIDTH;
     this.canvas.height = config.CANVAS_HEIGHT;
     this.ctx = this.canvas.getContext("2d");
-    this.canvasPosition = this.canvas.getBoundingClientRect();
+
+    // grid
     this.cellSize = config.CELL_SIZE;
     this.cellGap = config.CELL_GAP;
+    this.grid = [];
+
+    // game objects
     this.towers = new Map();
     this.enemies = new Map();
     this.projectiles = [];
+    this.floatingTexts = [];
+
+    // stats
+    this.numResources = config.PLAYER_STARTING_RESOURCES;
+    this.numKills = 0;
+    this.waveCount = 0;
+
     this.controlsBar = {
       width: this.canvas.width,
       height: this.cellSize,
     };
     this.mouse = new Mouse(config);
     this.enemiesInterval = config.ENEMY_SPAWN_INTERVAL;
-    this.numResources = config.PLAYER_STARTING_RESOURCES;
     this.towerCost = config.TOWER_COST;
     this.waveSize = config.STARTING_WAVE_SIZE;
     this.waveGrowthSize = config.WAVE_GROWTH;
-    this.waveCount = 1;
-    this.numKills = 0;
     this.frame = 0;
     this.gameOver = false;
     this.nextWaveButton = <HTMLButtonElement>(
       document.getElementById("next-wave")
     );
     this.waveInProgress = false;
-    this.floatingTexts = [];
-    this.gameGrid = [];
 
     this.populateGrid();
     this.handleMouseMovement();
-    this.handleClicks();
+    this.handleCanvasClicks();
+    this.handleNextWaveButton();
   }
 
   start = () => {
@@ -79,7 +89,7 @@ export default class Game {
 
   animate = () => {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.handleGameGrid();
+    this.handleGrid();
     this.handleTowers();
     this.handleProjectiles();
     this.handleEnemies();
@@ -104,19 +114,11 @@ export default class Game {
     return true;
   };
 
-  calculateDistance = (
-    first: Tower | Enemy | Projectile,
-    second: Tower | Enemy | Projectile
-  ) => {
-    const deltaX = Math.abs(first.x - second.x);
-    const deltaY = Math.abs(first.y - second.y);
-    return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-  };
-
   handleMouseMovement = () => {
+    const canvasPosition = this.canvas.getBoundingClientRect();
     this.canvas.addEventListener("mousemove", (e) => {
-      this.mouse.x = e.x - this.canvasPosition.left;
-      this.mouse.y = e.y - this.canvasPosition.top;
+      this.mouse.x = e.x - canvasPosition.left;
+      this.mouse.y = e.y - canvasPosition.top;
     });
     this.canvas.addEventListener("mouseleave", () => {
       this.mouse.x = undefined;
@@ -124,7 +126,7 @@ export default class Game {
     });
   };
 
-  handleClicks = () => {
+  handleCanvasClicks = () => {
     this.canvas.addEventListener("click", () => {
       const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
       const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
@@ -159,9 +161,19 @@ export default class Game {
         );
       }
     });
+  };
 
+  handleNextWaveButton = () => {
     this.nextWaveButton.addEventListener("click", () => {
       this.waveInProgress = !this.waveInProgress;
+
+      if (this.waveInProgress) {
+        this.waveCount += 1;
+        this.nextWaveButton.innerText = "stop wave";
+      } else {
+        this.nextWaveButton.innerText = "next wave";
+      }
+
       this.nextWaveButton.classList.contains("button-red")
         ? this.nextWaveButton.classList.remove("button-red")
         : this.nextWaveButton.classList.add("button-red");
@@ -171,13 +183,13 @@ export default class Game {
   populateGrid = () => {
     for (let y = this.cellSize; y < this.canvas.height; y += this.cellSize) {
       for (let x = 0; x < this.canvas.width; x += this.cellSize) {
-        this.gameGrid.push(new Cell(x, y, this.cellSize));
+        this.grid.push(new Cell(x, y, this.cellSize));
       }
     }
   };
 
-  handleGameGrid = () => {
-    for (const cell of this.gameGrid) {
+  handleGrid = () => {
+    for (const cell of this.grid) {
       cell.draw(this.ctx, this.mouse, this.collisionDetection);
     }
   };
@@ -275,7 +287,7 @@ export default class Game {
     this.floatingTexts.forEach((floatingText) => {
       floatingText.update();
       floatingText.draw();
-      if (floatingText.lifespan < 50) {
+      if (floatingText.lifespan < this.config.FLOATING_TEXT_LIFESPAN) {
         temp.push(floatingText);
       }
     });
