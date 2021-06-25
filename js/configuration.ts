@@ -14,10 +14,10 @@ export default class Configuration {
   ENEMY_SPAWN_INTERVAL: number;
   ENEMY_STARTING_POPULATION: number;
   STARTING_WAVE_SIZE: number;
-  WAVE_GROWTH: number;
   PLAYER_STARTING_RESOURCES: number;
   MOUSE_CONFIG: MouseConfig;
   FLOATING_TEXT_LIFESPAN: number;
+  MIN_WAVE_SIZE: number;
 
   constructor() {
     this.CELL_SIZE = 50;
@@ -26,9 +26,9 @@ export default class Configuration {
     this.CANVAS_HEIGHT = 600;
     this.TOWER_COST = 100;
     this.ENEMY_SPAWN_INTERVAL = 600;
-    this.ENEMY_STARTING_POPULATION = 50;
+    this.ENEMY_STARTING_POPULATION = 25;
     this.STARTING_WAVE_SIZE = 10;
-    this.WAVE_GROWTH = 3;
+    this.MIN_WAVE_SIZE = 20;
     this.PLAYER_STARTING_RESOURCES = 300;
     this.FLOATING_TEXT_LIFESPAN = 50;
     this.MOUSE_CONFIG = {

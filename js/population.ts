@@ -16,14 +16,19 @@ export default class Population {
   constructor(game: Game, n: number) {
     this.game = game;
     this.population = [];
+
     this.maxHeight = 100;
     this.minHeight = 10;
+
     this.maxWidth = 100;
     this.minWidth = 10;
-    this.minHealth = 50;
+
     this.maxHealth = 300;
-    this.minSpeed = 0.2;
+    this.minHealth = 50;
+
     this.maxSpeed = 3;
+    this.minSpeed = 0.2;
+
     this.initializePopulation(n);
   }
 

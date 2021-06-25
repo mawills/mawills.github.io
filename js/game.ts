@@ -29,7 +29,6 @@ export default class Game {
   numResources: number;
   towerCost: number;
   waveSize: number;
-  waveGrowthSize: number;
   waveCount: number;
   numKills: number;
   frame: number;
@@ -38,6 +37,7 @@ export default class Game {
   waveInProgress: boolean;
   population: Population;
   attackWave: Alien[];
+  minWaveSize: number;
   gameStarted: boolean;
 
   constructor(config: Configuration) {
@@ -75,7 +75,7 @@ export default class Game {
     this.waveInProgress = false;
     this.alienSpawnInterval = config.ENEMY_SPAWN_INTERVAL;
     this.waveSize = config.STARTING_WAVE_SIZE;
-    this.waveGrowthSize = config.WAVE_GROWTH;
+    this.minWaveSize = config.MIN_WAVE_SIZE;
 
     this.controlsBar = {
       width: this.canvas.width,
@@ -194,12 +194,21 @@ export default class Game {
   handleNextWaveButton = () => {
     this.nextWaveButton.addEventListener("click", () => {
       if (!this.gameStarted) this.gameStarted = true;
-      this.waveCount += 1;
-      if (this.waveCount > 1) this.population.reproduce();
-      this.waveInProgress = true;
-      this.waveSize = Math.floor(this.population.population.length / 2);
+
       this.nextWaveButton.disabled = true;
       this.nextWaveButton.innerText = "wave in progress";
+
+      this.waveCount += 1;
+      if (this.waveCount > 1) this.population.reproduce();
+
+      this.waveSize = Math.floor(this.population.population.length / 2);
+      if (this.waveSize <= this.minWaveSize)
+        this.waveSize = Math.min(
+          this.minWaveSize,
+          this.population.population.length
+        );
+
+      this.waveInProgress = true;
       this.attackWave = this.population.createAttackWave(this.waveSize);
     });
   };
@@ -239,11 +248,13 @@ export default class Game {
     this.aliens.forEach((alien, key) => {
       alien.update();
       alien.draw();
+
       if (alien.x + alien.width < 0) {
         alien.x = this.canvas.width;
         this.population.population.push(alien);
         this.aliens.delete(key);
       }
+
       if (!alien.alive()) {
         this.aliens.delete(key);
         this.floatingTexts.push(
