@@ -26,7 +26,7 @@ export default class Population {
     this.maxHealth = 300;
     this.minHealth = 50;
 
-    this.maxSpeed = 2;
+    this.maxSpeed = 1.5;
     this.minSpeed = 0.2;
 
     this.initializePopulation(n);

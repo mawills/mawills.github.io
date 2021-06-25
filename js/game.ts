@@ -166,9 +166,9 @@ export default class Game {
           this.cellSize - this.cellGap * 2,
           this.cellSize - this.cellGap * 2,
           500,
-          400,
-          2,
-          10
+          150,
+          7,
+          5
         )
       );
       this.numResources -= this.towerCost;

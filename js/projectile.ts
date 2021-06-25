@@ -32,8 +32,8 @@ export default class Projectile {
     this.speed = speed;
     this.power = power;
     this.range = range;
-    this.width = 10;
-    this.height = 10;
+    this.width = 6;
+    this.height = 6;
     this.destroyed = false;
   }
 
