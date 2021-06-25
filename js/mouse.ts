@@ -12,4 +12,11 @@ export default class Mouse {
     this.width = config.MOUSE_CONFIG.MOUSE_WIDTH;
     this.height = config.MOUSE_CONFIG.MOUSE_HEIGHT;
   }
+
+  update(x: number, y: number, w = this.width, h = this.height) {
+    this.x = x;
+    this.y = y;
+    this.width = w;
+    this.height = h;
+  }
 }

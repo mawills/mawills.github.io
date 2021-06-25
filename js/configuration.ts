@@ -11,7 +11,9 @@ export default class Configuration {
   CANVAS_WIDTH: number;
   CANVAS_HEIGHT: number;
   TOWER_COST: number;
-  ENEMY_SPAWN_INTERVAL: number;
+  INITIAL_SPAWN_INTERVAL: number;
+  MIN_SPAWN_INTERVAL: number;
+  SPAWN_INTERVAL_DECREMENT: number;
   ENEMY_STARTING_POPULATION: number;
   STARTING_WAVE_SIZE: number;
   PLAYER_STARTING_RESOURCES: number;
@@ -25,7 +27,9 @@ export default class Configuration {
     this.CANVAS_WIDTH = 900;
     this.CANVAS_HEIGHT = 600;
     this.TOWER_COST = 100;
-    this.ENEMY_SPAWN_INTERVAL = 600;
+    this.INITIAL_SPAWN_INTERVAL = 6000;
+    this.MIN_SPAWN_INTERVAL = 600;
+    this.SPAWN_INTERVAL_DECREMENT = 200;
     this.ENEMY_STARTING_POPULATION = 25;
     this.STARTING_WAVE_SIZE = 10;
     this.MIN_WAVE_SIZE = 20;

@@ -31,7 +31,6 @@ export default class Game {
   waveSize: number;
   waveCount: number;
   numKills: number;
-  frame: number;
   gameOver: boolean;
   nextWaveButton: HTMLButtonElement;
   waveInProgress: boolean;
@@ -39,6 +38,9 @@ export default class Game {
   attackWave: Alien[];
   minWaveSize: number;
   gameStarted: boolean;
+  lastSpawnedTime: number;
+  minSpawnInterval: number;
+  spawnIntervalDecrement: number;
 
   constructor(config: Configuration) {
     this.config = config;
@@ -73,9 +75,12 @@ export default class Game {
 
     // wave control
     this.waveInProgress = false;
-    this.alienSpawnInterval = config.ENEMY_SPAWN_INTERVAL;
+    this.alienSpawnInterval = config.INITIAL_SPAWN_INTERVAL;
+    this.minSpawnInterval = config.MIN_SPAWN_INTERVAL;
+    this.spawnIntervalDecrement = config.SPAWN_INTERVAL_DECREMENT;
     this.waveSize = config.STARTING_WAVE_SIZE;
     this.minWaveSize = config.MIN_WAVE_SIZE;
+    this.lastSpawnedTime = 0;
 
     this.controlsBar = {
       width: this.canvas.width,
@@ -83,7 +88,6 @@ export default class Game {
     };
     this.mouse = new Mouse(config);
     this.towerCost = config.TOWER_COST;
-    this.frame = 0;
     this.nextWaveButton = <HTMLButtonElement>(
       document.getElementById("next-wave")
     );
@@ -109,13 +113,12 @@ export default class Game {
     this.handleGameStatus();
     this.handleFloatingTexts();
     this.handleAttackWave();
-    this.frame += 1;
     if (!this.gameOver) requestAnimationFrame(this.animate);
   };
 
   collisionDetection(
-    first: Tower | Alien | Projectile | Mouse,
-    second: Tower | Alien | Projectile | Mouse
+    first: Tower | Alien | Projectile | Mouse | Cell,
+    second: Tower | Alien | Projectile | Mouse | Cell
   ) {
     if (
       first.x >= second.x + second.width ||
@@ -140,12 +143,10 @@ export default class Game {
   handleMouseMovement = () => {
     const canvasPosition = this.canvas.getBoundingClientRect();
     this.canvas.addEventListener("mousemove", (e) => {
-      this.mouse.x = e.x - canvasPosition.left;
-      this.mouse.y = e.y - canvasPosition.top;
+      this.mouse.update(e.x - canvasPosition.left, e.y - canvasPosition.top);
     });
     this.canvas.addEventListener("mouseleave", () => {
-      this.mouse.x = 0;
-      this.mouse.y = 0;
+      this.mouse.update(0, 0);
     });
   };
 
@@ -272,10 +273,17 @@ export default class Game {
       }
     });
 
-    if (this.waveInProgress && this.frame % this.alienSpawnInterval === 0) {
+    if (
+      this.waveInProgress &&
+      Date.now() - this.lastSpawnedTime > this.alienSpawnInterval
+    ) {
       let temp = this.attackWave.pop();
-      if (temp) this.aliens.set(temp.id, temp);
-      if (this.alienSpawnInterval > 120) this.alienSpawnInterval -= 50;
+      if (temp) {
+        this.aliens.set(temp.id, temp);
+        this.lastSpawnedTime = Date.now();
+        if (this.alienSpawnInterval > this.minSpawnInterval)
+          this.alienSpawnInterval -= this.spawnIntervalDecrement;
+      }
     }
   };
 
@@ -312,7 +320,7 @@ export default class Game {
     }
   };
 
-  handleFloatingTexts = () => {
+  handleFloatingTexts() {
     let temp: FloatingText[] = [];
     this.floatingTexts.forEach((floatingText) => {
       floatingText.update();
@@ -322,5 +330,5 @@ export default class Game {
       }
     });
     this.floatingTexts = temp;
-  };
+  }
 }
