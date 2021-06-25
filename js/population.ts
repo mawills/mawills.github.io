@@ -70,11 +70,8 @@ export default class Population {
     let attackWave: Alien[] = [];
     for (let i = 0; i < n; i++) {
       let temp = this.population.pop();
-      if (temp) {
-        attackWave.push(temp);
-      } else {
-        break;
-      }
+      if (!temp) break;
+      attackWave.push(temp);
     }
 
     return attackWave;
@@ -90,11 +87,10 @@ export default class Population {
       const height =
         (Math.min(parent1.height, parent2.height),
         Math.max(parent1.height, parent2.height));
-      Math.random() * (Math.abs(parent1.speed - parent2.speed) + 1);
       offspring.push(
         new Alien(
           this.game,
-          this.randomNumberInRange(height, 600 - height),
+          this.randomNumberInRange(height, this.game.canvas.height - height),
           this.randomNumberInRange(
             Math.min(parent1.width, parent2.width),
             Math.max(parent1.width, parent2.width)

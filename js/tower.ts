@@ -84,7 +84,7 @@ export default class Tower {
               this.angle,
               this.projectileSpeed,
               this.power,
-              2000
+              this.game.canvas.width
             )
           );
           this.lastFired = now;
