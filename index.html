@@ -7,9 +7,24 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <button id="next-wave">start</button>
-    <div id="stats">Stats:</div>
-    <canvas id="canvas"></canvas>
+    <div class="container">
+      <div id="stats">Stats:</div>
+      <div id="controls-bar">
+        <div id="tower-selector">
+          <div class="tower-card" id="tower1">tower1</div>
+          <div class="tower-card" id="tower2">tower2</div>
+          <div class="tower-card" id="tower3">tower3</div>
+          <div class="tower-card" id="tower4">tower4</div>
+          <div class="tower-card" id="tower5">tower5</div>
+        </div>
+        <div id="tower-stats">
+          tower stats will go here
+          <button id="tower-upgrade">upgrade tower</button>
+        </div>
+        <button id="next-wave">start</button>
+      </div>
+      <canvas id="canvas"></canvas>
+    </div>
     <script src="dist/bundle.js"></script>
   </body>
 </html>

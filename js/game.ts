@@ -37,6 +37,12 @@ export default class Game {
   lastSpawnedTime: number;
   minSpawnInterval: number;
   spawnIntervalDecrement: number;
+  towerStats: HTMLDivElement;
+  tower1Card: HTMLDivElement;
+  tower2Card: HTMLDivElement;
+  tower3Card: HTMLDivElement;
+  tower4Card: HTMLDivElement;
+  tower5Card: HTMLDivElement;
 
   constructor(dom: Dom, config: Configuration) {
     this.config = config;
@@ -44,6 +50,12 @@ export default class Game {
     // dom
     this.nextWaveButton = dom.nextWaveButton;
     this.stats = dom.stats;
+    this.towerStats = dom.towerStats;
+    this.tower1Card = dom.tower1Card;
+    this.tower2Card = dom.tower2Card;
+    this.tower3Card = dom.tower3Card;
+    this.tower4Card = dom.tower4Card;
+    this.tower5Card = dom.tower5Card;
 
     // canvas
     this.canvas = dom.canvas;
@@ -88,6 +100,7 @@ export default class Game {
     this.gameOver = false;
 
     this.populateGrid();
+    this.initializeControlsBar();
     this.handleMouseMovement();
     this.handleCanvasClicks();
     this.handleNextWaveButton();
@@ -141,6 +154,28 @@ export default class Game {
     this.canvas.addEventListener("mouseleave", () => {
       this.mouse.update(0, 0);
     });
+  }
+
+  initializeControlsBar() {
+    this.tower1Card.onclick = () => {
+      console.log(this.tower1Card);
+    };
+
+    this.tower2Card.onclick = () => {
+      console.log(this.tower2Card);
+    };
+
+    this.tower3Card.onclick = () => {
+      console.log(this.tower3Card);
+    };
+
+    this.tower4Card.onclick = () => {
+      console.log(this.tower4Card);
+    };
+
+    this.tower5Card.onclick = () => {
+      console.log(this.tower5Card);
+    };
   }
 
   placeTower() {
