@@ -97,7 +97,7 @@ export default class Game {
 
     this.populateGrid();
     this.initializeControlsBar();
-    this.handleMouseMovement();
+    this.handleMouse();
     this.handleCanvasClicks();
     this.handleNextWaveButton();
   }
@@ -142,9 +142,9 @@ export default class Game {
     return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
   }
 
-  handleMouseMovement() {
-    const canvasPosition = this.canvas.getBoundingClientRect();
+  handleMouse() {
     this.canvas.addEventListener("mousemove", (e) => {
+      const canvasPosition = this.canvas.getBoundingClientRect();
       this.mouse.update(e.x - canvasPosition.left, e.y - canvasPosition.top);
     });
     this.canvas.addEventListener("mouseleave", () => {
