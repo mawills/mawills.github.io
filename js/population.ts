@@ -26,7 +26,7 @@ export default class Population {
     this.maxHealth = 300;
     this.minHealth = 50;
 
-    this.maxSpeed = 3;
+    this.maxSpeed = 2;
     this.minSpeed = 0.2;
 
     this.initializePopulation(n);
@@ -42,11 +42,11 @@ export default class Population {
       this.population.push(
         new Alien(
           this.game,
-          this.randomNumberInRange(height, 600 - height),
+          this.randomNumberInRange(height, this.game.canvas.height - height),
           this.randomNumberInRange(this.minWidth, this.maxWidth),
           height,
           this.randomNumberInRange(this.minHealth, this.maxHealth),
-          this.randomNumberInRange(0.2, 0.8)
+          this.randomNumberInRange(this.minSpeed, this.maxSpeed)
         )
       );
     }

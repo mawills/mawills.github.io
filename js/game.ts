@@ -165,7 +165,7 @@ export default class Game {
           gridPositionY,
           this.cellSize - this.cellGap * 2,
           this.cellSize - this.cellGap * 2,
-          200,
+          500,
           400,
           2,
           10

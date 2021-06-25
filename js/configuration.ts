@@ -24,8 +24,8 @@ export default class Configuration {
   constructor() {
     this.CELL_SIZE = 50;
     this.CELL_GAP = 0;
-    this.CANVAS_WIDTH = 900;
-    this.CANVAS_HEIGHT = 600;
+    this.CANVAS_WIDTH = 1800;
+    this.CANVAS_HEIGHT = 1200;
     this.TOWER_COST = 100;
     this.INITIAL_SPAWN_INTERVAL = 6000;
     this.MIN_SPAWN_INTERVAL = 600;
