@@ -6,14 +6,12 @@ import Projectile from "./projectile";
 import Configuration from "./configuration";
 import FloatingText from "./floatingText";
 import Population from "./population";
-
-interface ControlsBar {
-  width: number;
-  height: number;
-}
+import Dom from "./dom";
 
 export default class Game {
   config: Configuration;
+  nextWaveButton: HTMLButtonElement;
+  stats: HTMLDivElement;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   cellSize: number;
@@ -23,7 +21,6 @@ export default class Game {
   aliens: Map<number, Alien>;
   projectiles: Projectile[];
   floatingTexts: FloatingText[];
-  controlsBar: ControlsBar;
   mouse: Mouse;
   alienSpawnInterval: number;
   numResources: number;
@@ -32,7 +29,6 @@ export default class Game {
   waveCount: number;
   numKills: number;
   gameOver: boolean;
-  nextWaveButton: HTMLButtonElement;
   waveInProgress: boolean;
   population: Population;
   attackWave: Alien[];
@@ -42,11 +38,15 @@ export default class Game {
   minSpawnInterval: number;
   spawnIntervalDecrement: number;
 
-  constructor(config: Configuration) {
+  constructor(dom: Dom, config: Configuration) {
     this.config = config;
 
+    // dom
+    this.nextWaveButton = dom.nextWaveButton;
+    this.stats = dom.stats;
+
     // canvas
-    this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
+    this.canvas = dom.canvas;
     this.canvas.width = config.CANVAS_WIDTH;
     this.canvas.height = config.CANVAS_HEIGHT;
     let ctx = this.canvas.getContext("2d");
@@ -82,15 +82,8 @@ export default class Game {
     this.minWaveSize = config.MIN_WAVE_SIZE;
     this.lastSpawnedTime = 0;
 
-    this.controlsBar = {
-      width: this.canvas.width,
-      height: this.cellSize,
-    };
     this.mouse = new Mouse(config);
     this.towerCost = config.TOWER_COST;
-    this.nextWaveButton = <HTMLButtonElement>(
-      document.getElementById("next-wave")
-    );
     this.gameStarted = false;
     this.gameOver = false;
 
@@ -100,9 +93,9 @@ export default class Game {
     this.handleNextWaveButton();
   }
 
-  start = () => {
+  start() {
     this.animate();
-  };
+  }
 
   animate = () => {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -110,9 +103,9 @@ export default class Game {
     this.handleTowers();
     this.handleProjectiles();
     this.handleAliens();
-    this.handleGameStatus();
     this.handleFloatingTexts();
     this.handleAttackWave();
+    this.handleGameStats();
     if (!this.gameOver) requestAnimationFrame(this.animate);
   };
 
@@ -140,7 +133,7 @@ export default class Game {
     return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
   }
 
-  handleMouseMovement = () => {
+  handleMouseMovement() {
     const canvasPosition = this.canvas.getBoundingClientRect();
     this.canvas.addEventListener("mousemove", (e) => {
       this.mouse.update(e.x - canvasPosition.left, e.y - canvasPosition.top);
@@ -148,13 +141,12 @@ export default class Game {
     this.canvas.addEventListener("mouseleave", () => {
       this.mouse.update(0, 0);
     });
-  };
+  }
 
   placeTower() {
     const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
     const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
     const towerId = gridPositionX + "," + gridPositionY;
-    if (gridPositionY < this.cellSize) return;
     if (this.towers.has(towerId)) return;
     if (this.numResources >= this.towerCost) {
       this.towers.set(
@@ -186,13 +178,13 @@ export default class Game {
     }
   }
 
-  handleCanvasClicks = () => {
+  handleCanvasClicks() {
     this.canvas.addEventListener("click", () => {
       this.placeTower();
     });
-  };
+  }
 
-  handleNextWaveButton = () => {
+  handleNextWaveButton() {
     this.nextWaveButton.addEventListener("click", () => {
       if (!this.gameStarted) this.gameStarted = true;
 
@@ -212,23 +204,40 @@ export default class Game {
       this.waveInProgress = true;
       this.attackWave = this.population.createAttackWave(this.waveSize);
     });
-  };
+  }
 
-  populateGrid = () => {
-    for (let y = this.cellSize; y < this.canvas.height; y += this.cellSize) {
+  populateGrid() {
+    for (let y = 0; y < this.canvas.height; y += this.cellSize) {
       for (let x = 0; x < this.canvas.width; x += this.cellSize) {
         this.grid.push(new Cell(this, x, y, this.cellSize));
       }
     }
-  };
+  }
 
-  handleGrid = () => {
+  handleGameStats() {
+    this.stats.innerText =
+      "Resources: " +
+      this.numResources +
+      " " +
+      "Kills: " +
+      this.numKills +
+      " " +
+      "Wave: " +
+      this.waveCount +
+      " " +
+      "Population: " +
+      (this.population.population.length +
+        this.aliens.size +
+        this.attackWave.length);
+  }
+
+  handleGrid() {
     for (const cell of this.grid) {
       cell.draw();
     }
-  };
+  }
 
-  handleProjectiles = () => {
+  handleProjectiles() {
     let temp: Projectile[] = [];
     this.projectiles.forEach((projectile) => {
       projectile.update();
@@ -236,16 +245,16 @@ export default class Game {
       if (!projectile.destroyed) temp.push(projectile);
     });
     this.projectiles = temp;
-  };
+  }
 
-  handleTowers = () => {
+  handleTowers() {
     this.towers.forEach((tower) => {
       tower.update();
       tower.draw();
     });
-  };
+  }
 
-  handleAliens = () => {
+  handleAliens() {
     this.aliens.forEach((alien, key) => {
       alien.update();
       alien.draw();
@@ -285,9 +294,9 @@ export default class Game {
           this.alienSpawnInterval -= this.spawnIntervalDecrement;
       }
     }
-  };
+  }
 
-  handleAttackWave = () => {
+  handleAttackWave() {
     if (this.gameStarted && !this.waveInProgress) {
       this.nextWaveButton.disabled = false;
       this.nextWaveButton.innerText = "next wave";
@@ -296,29 +305,7 @@ export default class Game {
     if (this.attackWave.length == 0 && this.aliens.size == 0) {
       this.waveInProgress = false;
     }
-  };
-
-  handleGameStatus = () => {
-    this.ctx.fillStyle = "blue";
-    this.ctx.fillRect(0, 0, this.controlsBar.width, this.controlsBar.height);
-    this.ctx.fillStyle = "gold";
-    this.ctx.font = "30px Arial";
-    this.ctx.fillText("Resources: " + this.numResources, 20, 35);
-    this.ctx.fillText("Kills: " + this.numKills, 270, 35);
-    this.ctx.fillText(
-      "Population: " +
-        (this.population.population.length +
-          this.aliens.size +
-          this.attackWave.length),
-      this.canvas.width - 300,
-      35
-    );
-    if (this.gameOver) {
-      this.ctx.fillStyle = "black";
-      this.ctx.font = "90px Arial";
-      this.ctx.fillText("GAME OVER", 135, 330);
-    }
-  };
+  }
 
   handleFloatingTexts() {
     let temp: FloatingText[] = [];

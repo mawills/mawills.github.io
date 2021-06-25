@@ -1,5 +1,6 @@
 body {
   background: black;
+  color: white;
 }
 
 #canvas {
@@ -8,7 +9,7 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 1800px;
-  height: 1200px;
+  width: 1350px;
+  height: 900px;
   background: white;
 }
