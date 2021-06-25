@@ -6,8 +6,7 @@ export default class Tower {
   game: Game;
   x: number;
   y: number;
-  width: number;
-  height: number;
+  cost: number;
   range: number;
   power: number;
   projectileSpeed: number;
@@ -15,13 +14,14 @@ export default class Tower {
   lastFired: number;
   angle: number;
   target: Alien | null;
+  width: number;
+  height: number;
 
   constructor(
     game: Game,
     x: number,
     y: number,
-    width: number,
-    height: number,
+    cost: number,
     range: number,
     cooldown: number,
     projectileSpeed: number,
@@ -34,10 +34,11 @@ export default class Tower {
     this.y = y;
 
     // appearance
-    this.width = width;
-    this.height = height;
+    this.width = this.game.cellSize - this.game.cellGap * 2;
+    this.height = this.width;
 
     // stats
+    this.cost = cost;
     this.range = range;
     this.cooldown = cooldown;
     this.projectileSpeed = projectileSpeed;
@@ -129,5 +130,95 @@ export default class Tower {
     this.findTarget();
     this.changeAngle();
     this.checkFire();
+  }
+}
+
+export class MachineGunTower extends Tower {
+  constructor(
+    game: Game,
+    x: number,
+    y: number,
+    cost: number,
+    range: number,
+    cooldown: number,
+    projectileSpeed: number,
+    power: number
+  ) {
+    super(game, x, y, cost, range, cooldown, projectileSpeed, power);
+  }
+
+  draw() {
+    this.game.ctx.save();
+
+    this.game.ctx.fillStyle = "blue";
+    this.game.ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+    this.game.ctx.rotate(this.angle);
+    this.game.ctx.translate(
+      -(this.x + this.width / 2),
+      -(this.y + this.height / 2)
+    );
+    this.game.ctx.fillRect(this.x, this.y, this.width, this.height);
+    this.game.ctx.fillStyle = "black";
+    this.game.ctx.font = "30px Arial";
+    this.game.ctx.fillText("===", this.x + 15, this.y + 30);
+    if (
+      this.game.mouse.x &&
+      this.game.mouse.y &&
+      this.game.collisionDetection(this, this.game.mouse)
+    ) {
+      this.game.ctx.beginPath();
+      const centerX = this.x + this.width / 2;
+      const centerY = this.y + this.height / 2;
+      this.game.ctx.arc(centerX, centerY, this.range, 0, Math.PI * 2);
+      this.game.ctx.fillStyle = "rgba(255, 0, 0, 0.1)";
+      this.game.ctx.fill();
+    }
+
+    this.game.ctx.restore();
+  }
+}
+
+export class FlamethrowerTower extends Tower {
+  constructor(
+    game: Game,
+    x: number,
+    y: number,
+    cost: number,
+    range: number,
+    cooldown: number,
+    projectileSpeed: number,
+    power: number
+  ) {
+    super(game, x, y, cost, range, cooldown, projectileSpeed, power);
+  }
+
+  draw() {
+    this.game.ctx.save();
+
+    this.game.ctx.fillStyle = "orange";
+    this.game.ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+    this.game.ctx.rotate(this.angle);
+    this.game.ctx.translate(
+      -(this.x + this.width / 2),
+      -(this.y + this.height / 2)
+    );
+    this.game.ctx.fillRect(this.x, this.y, this.width, this.height);
+    this.game.ctx.fillStyle = "black";
+    this.game.ctx.font = "30px Arial";
+    this.game.ctx.fillText("===", this.x + 15, this.y + 30);
+    if (
+      this.game.mouse.x &&
+      this.game.mouse.y &&
+      this.game.collisionDetection(this, this.game.mouse)
+    ) {
+      this.game.ctx.beginPath();
+      const centerX = this.x + this.width / 2;
+      const centerY = this.y + this.height / 2;
+      this.game.ctx.arc(centerX, centerY, this.range, 0, Math.PI * 2);
+      this.game.ctx.fillStyle = "rgba(255, 0, 0, 0.1)";
+      this.game.ctx.fill();
+    }
+
+    this.game.ctx.restore();
   }
 }

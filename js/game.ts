@@ -1,9 +1,9 @@
 import Cell from "./cell";
 import Mouse from "./mouse";
-import Tower from "./tower";
+import Tower, { FlamethrowerTower, MachineGunTower } from "./tower";
 import Alien from "./alien";
 import Projectile from "./projectile";
-import Configuration from "./configuration";
+import Configuration, { TowerCosts } from "./configuration";
 import FloatingText from "./floatingText";
 import Population from "./population";
 import Dom from "./dom";
@@ -24,7 +24,6 @@ export default class Game {
   mouse: Mouse;
   alienSpawnInterval: number;
   numResources: number;
-  towerCost: number;
   waveSize: number;
   waveCount: number;
   numKills: number;
@@ -38,11 +37,9 @@ export default class Game {
   minSpawnInterval: number;
   spawnIntervalDecrement: number;
   towerStats: HTMLDivElement;
-  tower1Card: HTMLDivElement;
-  tower2Card: HTMLDivElement;
-  tower3Card: HTMLDivElement;
-  tower4Card: HTMLDivElement;
-  tower5Card: HTMLDivElement;
+  towerSelector: HTMLDivElement;
+  selectedTowerCard: string;
+  towerCosts: TowerCosts;
 
   constructor(dom: Dom, config: Configuration) {
     this.config = config;
@@ -51,11 +48,7 @@ export default class Game {
     this.nextWaveButton = dom.nextWaveButton;
     this.stats = dom.stats;
     this.towerStats = dom.towerStats;
-    this.tower1Card = dom.tower1Card;
-    this.tower2Card = dom.tower2Card;
-    this.tower3Card = dom.tower3Card;
-    this.tower4Card = dom.tower4Card;
-    this.tower5Card = dom.tower5Card;
+    this.towerSelector = dom.towerSelector;
 
     // canvas
     this.canvas = dom.canvas;
@@ -94,8 +87,11 @@ export default class Game {
     this.minWaveSize = config.MIN_WAVE_SIZE;
     this.lastSpawnedTime = 0;
 
+    // controls bar
+    this.selectedTowerCard = "";
+    this.towerCosts = config.TOWER_COSTS;
+
     this.mouse = new Mouse(config);
-    this.towerCost = config.TOWER_COST;
     this.gameStarted = false;
     this.gameOver = false;
 
@@ -157,25 +153,13 @@ export default class Game {
   }
 
   initializeControlsBar() {
-    this.tower1Card.onclick = () => {
-      console.log(this.tower1Card);
-    };
-
-    this.tower2Card.onclick = () => {
-      console.log(this.tower2Card);
-    };
-
-    this.tower3Card.onclick = () => {
-      console.log(this.tower3Card);
-    };
-
-    this.tower4Card.onclick = () => {
-      console.log(this.tower4Card);
-    };
-
-    this.tower5Card.onclick = () => {
-      console.log(this.tower5Card);
-    };
+    let temp: any = Array.from(this.towerSelector.children);
+    temp.forEach((child: any) => {
+      child.onclick = () => {
+        this.selectedTowerCard = child.id;
+        this.towerStats.innerText = `selected ${this.selectedTowerCard}`;
+      };
+    });
   }
 
   placeTower() {
@@ -183,22 +167,38 @@ export default class Game {
     const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
     const towerId = gridPositionX + "," + gridPositionY;
     if (this.towers.has(towerId)) return;
-    if (this.numResources >= this.towerCost) {
-      this.towers.set(
-        towerId,
-        new Tower(
+    let newTower: Tower;
+    switch (this.selectedTowerCard) {
+      case "tower1":
+        newTower = new MachineGunTower(
           this,
           gridPositionX,
           gridPositionY,
-          this.cellSize - this.cellGap * 2,
-          this.cellSize - this.cellGap * 2,
+          100,
           500,
           150,
           7,
           5
-        )
-      );
-      this.numResources -= this.towerCost;
+        );
+        break;
+      case "tower2":
+        newTower = new FlamethrowerTower(
+          this,
+          gridPositionX,
+          gridPositionY,
+          150,
+          500,
+          150,
+          7,
+          5
+        );
+        break;
+      default:
+        return;
+    }
+    if (this.numResources >= newTower.cost) {
+      this.towers.set(towerId, newTower);
+      this.numResources -= newTower.cost;
     } else {
       this.floatingTexts.push(
         new FloatingText(

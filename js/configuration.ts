@@ -5,12 +5,20 @@ interface MouseConfig {
   MOUSE_HEIGHT: number;
 }
 
+export interface TowerCosts {
+  tower1: number;
+  tower2: number;
+  tower3: number;
+  tower4: number;
+  tower5: number;
+}
+
 export default class Configuration {
   CELL_SIZE: number;
   CELL_GAP: number;
   CANVAS_WIDTH: number;
   CANVAS_HEIGHT: number;
-  TOWER_COST: number;
+  TOWER_COSTS: TowerCosts;
   INITIAL_SPAWN_INTERVAL: number;
   MIN_SPAWN_INTERVAL: number;
   SPAWN_INTERVAL_DECREMENT: number;
@@ -26,7 +34,6 @@ export default class Configuration {
     this.CELL_GAP = 0;
     this.CANVAS_WIDTH = 1350;
     this.CANVAS_HEIGHT = 900;
-    this.TOWER_COST = 100;
     this.INITIAL_SPAWN_INTERVAL = 6000;
     this.MIN_SPAWN_INTERVAL = 600;
     this.SPAWN_INTERVAL_DECREMENT = 200;
@@ -40,6 +47,13 @@ export default class Configuration {
       MOUSE_STARTING_Y: -1,
       MOUSE_WIDTH: 0.1,
       MOUSE_HEIGHT: 0.1,
+    };
+    this.TOWER_COSTS = {
+      tower1: 100,
+      tower2: 150,
+      tower3: 100,
+      tower4: 100,
+      tower5: 100,
     };
   }
 }

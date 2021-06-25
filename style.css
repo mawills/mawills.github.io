@@ -1,8 +1,15 @@
+html {
+  height: 100%;
+}
+
 body {
   background: black;
   color: white;
   display: flex;
   justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin: 0;
 }
 
 .container {
@@ -20,20 +27,19 @@ body {
 
 #tower-selector {
   display: flex;
-  flex-grow: 2;
 }
 
 .tower-card {
   border: 1px solid white;
   border-radius: 10px;
   margin: 2px;
-  flex-grow: 1;
+  height: 115px;
+  width: 115px;
 }
 
 #tower-stats {
   display: flex;
   flex-direction: column;
-  flex-grow: 3;
 }
 
 #tower-upgrade {
