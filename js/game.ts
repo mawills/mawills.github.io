@@ -187,10 +187,10 @@ export default class Game {
           gridPositionX,
           gridPositionY,
           150,
-          500,
-          150,
-          7,
-          5
+          200,
+          5,
+          15,
+          0.5
         );
         break;
       default:
