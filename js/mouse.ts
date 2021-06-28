@@ -1,4 +1,4 @@
-import Configuration from "./configuration";
+import config from "./configuration";
 
 export default class Mouse {
   x: number;
@@ -6,7 +6,7 @@ export default class Mouse {
   width: number;
   height: number;
 
-  constructor(config: Configuration) {
+  constructor() {
     this.x = config.MOUSE_CONFIG.MOUSE_STARTING_X;
     this.y = config.MOUSE_CONFIG.MOUSE_STARTING_Y;
     this.width = config.MOUSE_CONFIG.MOUSE_WIDTH;

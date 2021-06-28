@@ -3,13 +3,12 @@ import Mouse from "./mouse";
 import Tower, { FlamethrowerTower, MachineGunTower } from "./tower";
 import Alien from "./alien";
 import Projectile from "./projectile";
-import Configuration, { TowerCosts } from "./configuration";
+import config from "./configuration";
 import FloatingText from "./floatingText";
 import Population from "./population";
 import Dom from "./dom";
 
 export default class Game {
-  config: Configuration;
   nextWaveButton: HTMLButtonElement;
   stats: HTMLDivElement;
   canvas: HTMLCanvasElement;
@@ -39,11 +38,8 @@ export default class Game {
   towerStats: HTMLDivElement;
   towerSelector: HTMLDivElement;
   selectedTowerCard: string;
-  towerCosts: TowerCosts;
 
-  constructor(dom: Dom, config: Configuration) {
-    this.config = config;
-
+  constructor(dom: Dom) {
     // dom
     this.nextWaveButton = dom.nextWaveButton;
     this.stats = dom.stats;
@@ -89,9 +85,8 @@ export default class Game {
 
     // controls bar
     this.selectedTowerCard = "";
-    this.towerCosts = config.TOWER_COSTS;
 
-    this.mouse = new Mouse(config);
+    this.mouse = new Mouse();
     this.gameStarted = false;
     this.gameOver = false;
 
@@ -347,7 +342,7 @@ export default class Game {
     this.floatingTexts.forEach((floatingText) => {
       floatingText.update();
       floatingText.draw();
-      if (floatingText.lifespan < this.config.FLOATING_TEXT_LIFESPAN) {
+      if (floatingText.lifespan < config.FLOATING_TEXT_LIFESPAN) {
         temp.push(floatingText);
       }
     });

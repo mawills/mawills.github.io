@@ -1,59 +1,27 @@
-interface MouseConfig {
-  MOUSE_STARTING_X: number;
-  MOUSE_STARTING_Y: number;
-  MOUSE_WIDTH: number;
-  MOUSE_HEIGHT: number;
-}
-
-export interface TowerCosts {
-  tower1: number;
-  tower2: number;
-  tower3: number;
-  tower4: number;
-  tower5: number;
-}
-
-export default class Configuration {
-  CELL_SIZE: number;
-  CELL_GAP: number;
-  CANVAS_WIDTH: number;
-  CANVAS_HEIGHT: number;
-  TOWER_COSTS: TowerCosts;
-  INITIAL_SPAWN_INTERVAL: number;
-  MIN_SPAWN_INTERVAL: number;
-  SPAWN_INTERVAL_DECREMENT: number;
-  ENEMY_STARTING_POPULATION: number;
-  STARTING_WAVE_SIZE: number;
-  PLAYER_STARTING_RESOURCES: number;
-  MOUSE_CONFIG: MouseConfig;
-  FLOATING_TEXT_LIFESPAN: number;
-  MIN_WAVE_SIZE: number;
-
-  constructor() {
-    this.CELL_SIZE = 50;
-    this.CELL_GAP = 0;
-    this.CANVAS_WIDTH = 1350;
-    this.CANVAS_HEIGHT = 900;
-    this.INITIAL_SPAWN_INTERVAL = 6000;
-    this.MIN_SPAWN_INTERVAL = 600;
-    this.SPAWN_INTERVAL_DECREMENT = 200;
-    this.ENEMY_STARTING_POPULATION = 25;
-    this.STARTING_WAVE_SIZE = 10;
-    this.MIN_WAVE_SIZE = 20;
-    this.PLAYER_STARTING_RESOURCES = 300;
-    this.FLOATING_TEXT_LIFESPAN = 50;
-    this.MOUSE_CONFIG = {
-      MOUSE_STARTING_X: -1,
-      MOUSE_STARTING_Y: -1,
-      MOUSE_WIDTH: 0.1,
-      MOUSE_HEIGHT: 0.1,
-    };
-    this.TOWER_COSTS = {
-      tower1: 100,
-      tower2: 150,
-      tower3: 100,
-      tower4: 100,
-      tower5: 100,
-    };
-  }
-}
+export default {
+  CELL_SIZE: 50,
+  CELL_GAP: 0,
+  CANVAS_WIDTH: 1350,
+  CANVAS_HEIGHT: 900,
+  INITIAL_SPAWN_INTERVAL: 6000,
+  MIN_SPAWN_INTERVAL: 600,
+  SPAWN_INTERVAL_DECREMENT: 200,
+  ENEMY_STARTING_POPULATION: 25,
+  STARTING_WAVE_SIZE: 10,
+  MIN_WAVE_SIZE: 20,
+  PLAYER_STARTING_RESOURCES: 300,
+  FLOATING_TEXT_LIFESPAN: 50,
+  MOUSE_CONFIG: {
+    MOUSE_STARTING_X: -1,
+    MOUSE_STARTING_Y: -1,
+    MOUSE_WIDTH: 0.1,
+    MOUSE_HEIGHT: 0.1,
+  },
+  TOWER_COSTS: {
+    tower1: 100,
+    tower2: 150,
+    tower3: 100,
+    tower4: 100,
+    tower5: 100,
+  },
+};
