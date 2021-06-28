@@ -7,6 +7,7 @@ import config from "./configuration";
 import FloatingText from "./floatingText";
 import Population from "./population";
 import Dom from "./dom";
+import GameObject from "./gameObject";
 
 export default class Game {
   nextWaveButton: HTMLButtonElement;
@@ -114,8 +115,8 @@ export default class Game {
   };
 
   collisionDetection(
-    first: Tower | Alien | Projectile | Mouse | Cell,
-    second: Tower | Alien | Projectile | Mouse | Cell
+    first: GameObject | Mouse | Cell,
+    second: GameObject | Mouse | Cell
   ) {
     if (
       first.x >= second.x + second.width ||
@@ -128,10 +129,7 @@ export default class Game {
     return true;
   }
 
-  calculateDistance(
-    first: Tower | Alien | Projectile,
-    second: Tower | Alien | Projectile
-  ) {
+  calculateDistance(first: GameObject, second: GameObject) {
     const deltaX = Math.abs(first.x - second.x);
     const deltaY = Math.abs(first.y - second.y);
     return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));

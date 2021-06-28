@@ -1,13 +1,9 @@
 import Game from "./game";
+import GameObject from "./gameObject";
 
-export default class Projectile {
-  game: Game;
-  x: number;
-  y: number;
+export default class Projectile extends GameObject {
   startingX: number;
   startingY: number;
-  width: number;
-  height: number;
   power: number;
   speed: number;
   range: number;
@@ -18,11 +14,14 @@ export default class Projectile {
     game: Game,
     x: number,
     y: number,
+    width: number,
+    height: number,
     angle: number,
     speed: number,
     power: number,
     range: number
   ) {
+    super(game, x, y, width, height);
     this.game = game;
     this.x = x;
     this.y = y;

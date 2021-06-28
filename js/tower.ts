@@ -1,21 +1,14 @@
 import Projectile from "./projectile";
 import Alien from "./alien";
 import Game from "./game";
+import GameObject from "./gameObject";
 
-export default class Tower {
-  game: Game;
-  x: number;
-  y: number;
+export default class Tower extends GameObject {
   cost: number;
   range: number;
   power: number;
   projectileSpeed: number;
   cooldown: number;
-  lastFired: number;
-  angle: number;
-  target: Alien | null;
-  width: number;
-  height: number;
 
   constructor(
     game: Game,
@@ -27,24 +20,39 @@ export default class Tower {
     projectileSpeed: number,
     power: number
   ) {
-    this.game = game;
+    super(
+      game,
+      x,
+      y,
+      game.cellSize - game.cellGap * 2,
+      game.cellSize - game.cellGap * 2
+    );
 
-    // location
-    this.x = x;
-    this.y = y;
-
-    // appearance
-    this.width = this.game.cellSize - this.game.cellGap * 2;
-    this.height = this.width;
-
-    // stats
     this.cost = cost;
     this.range = range;
     this.cooldown = cooldown;
     this.projectileSpeed = projectileSpeed;
     this.power = power;
+  }
+}
 
-    // attack
+export class MachineGunTower extends Tower {
+  lastFired: number;
+  angle: number;
+  target: Alien | null;
+
+  constructor(
+    game: Game,
+    x: number,
+    y: number,
+    cost: number,
+    range: number,
+    cooldown: number,
+    projectileSpeed: number,
+    power: number
+  ) {
+    super(game, x, y, cost, range, cooldown, projectileSpeed, power);
+
     this.angle = 0;
     this.target = null;
     this.lastFired = Date.now();
@@ -71,31 +79,6 @@ export default class Tower {
     }
   }
 
-  checkFire() {}
-
-  draw() {}
-
-  update() {
-    this.findTarget();
-    this.changeAngle();
-    this.checkFire();
-  }
-}
-
-export class MachineGunTower extends Tower {
-  constructor(
-    game: Game,
-    x: number,
-    y: number,
-    cost: number,
-    range: number,
-    cooldown: number,
-    projectileSpeed: number,
-    power: number
-  ) {
-    super(game, x, y, cost, range, cooldown, projectileSpeed, power);
-  }
-
   checkFire() {
     if (this.target) {
       const now = Date.now();
@@ -107,6 +90,8 @@ export class MachineGunTower extends Tower {
               this.game,
               this.x + this.width / 2,
               this.y + this.height / 2,
+              6,
+              6,
               this.angle,
               this.projectileSpeed,
               this.power,
@@ -150,9 +135,19 @@ export class MachineGunTower extends Tower {
 
     this.game.ctx.restore();
   }
+
+  update() {
+    this.findTarget();
+    this.changeAngle();
+    this.checkFire();
+  }
 }
 
 export class FlamethrowerTower extends Tower {
+  lastFired: number;
+  angle: number;
+  target: Alien | null;
+
   constructor(
     game: Game,
     x: number,
@@ -164,6 +159,31 @@ export class FlamethrowerTower extends Tower {
     power: number
   ) {
     super(game, x, y, cost, range, cooldown, projectileSpeed, power);
+
+    this.angle = 0;
+    this.target = null;
+    this.lastFired = Date.now();
+  }
+
+  findTarget() {
+    if (this.target && !this.game.aliens.has(this.target.id))
+      this.target = null;
+    if (!this.target) {
+      this.game.aliens.forEach((alien) => {
+        if (this.game.calculateDistance(this, alien) < this.range) {
+          this.target = alien;
+          return;
+        }
+      });
+    }
+  }
+
+  changeAngle() {
+    if (this.target) {
+      let dx = this.x - this.target.x;
+      let dy = this.y - this.target.y;
+      this.angle = Math.atan2(dy, dx) - Math.PI;
+    }
   }
 
   checkFire() {
@@ -177,10 +197,12 @@ export class FlamethrowerTower extends Tower {
               this.game,
               this.x + this.width / 2,
               this.y + this.height / 2,
+              6,
+              6,
               this.angle,
               this.projectileSpeed,
               this.power,
-              this.range
+              this.game.canvas.width
             )
           );
           this.lastFired = now;
@@ -219,5 +241,11 @@ export class FlamethrowerTower extends Tower {
     }
 
     this.game.ctx.restore();
+  }
+
+  update() {
+    this.findTarget();
+    this.changeAngle();
+    this.checkFire();
   }
 }
