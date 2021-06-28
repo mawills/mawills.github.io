@@ -14,8 +14,6 @@ export default class Game {
   stats: HTMLDivElement;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  cellSize: number;
-  cellGap: number;
   grid: Cell[];
   towers: Map<string, Tower>;
   aliens: Map<number, Alien>;
@@ -31,11 +29,8 @@ export default class Game {
   waveInProgress: boolean;
   population: Population;
   attackWave: Alien[];
-  minWaveSize: number;
   gameStarted: boolean;
   lastSpawnedTime: number;
-  minSpawnInterval: number;
-  spawnIntervalDecrement: number;
   towerStats: HTMLDivElement;
   towerSelector: HTMLDivElement;
   selectedTowerCard: string;
@@ -56,8 +51,6 @@ export default class Game {
     this.ctx = ctx;
 
     // grid
-    this.cellSize = config.CELL_SIZE;
-    this.cellGap = config.CELL_GAP;
     this.grid = [];
 
     // game objects
@@ -78,10 +71,7 @@ export default class Game {
     // wave control
     this.waveInProgress = false;
     this.alienSpawnInterval = config.INITIAL_SPAWN_INTERVAL;
-    this.minSpawnInterval = config.MIN_SPAWN_INTERVAL;
-    this.spawnIntervalDecrement = config.SPAWN_INTERVAL_DECREMENT;
     this.waveSize = config.STARTING_WAVE_SIZE;
-    this.minWaveSize = config.MIN_WAVE_SIZE;
     this.lastSpawnedTime = 0;
 
     // controls bar
@@ -156,8 +146,8 @@ export default class Game {
   }
 
   placeTower() {
-    const gridPositionX = this.mouse.x - (this.mouse.x % this.cellSize);
-    const gridPositionY = this.mouse.y - (this.mouse.y % this.cellSize);
+    const gridPositionX = this.mouse.x - (this.mouse.x % config.CELL_SIZE);
+    const gridPositionY = this.mouse.y - (this.mouse.y % config.CELL_SIZE);
     const towerId = gridPositionX + "," + gridPositionY;
     if (this.towers.has(towerId)) return;
     let newTower: Tower;
@@ -167,11 +157,11 @@ export default class Game {
           this,
           gridPositionX,
           gridPositionY,
-          100,
-          500,
-          150,
-          7,
-          5
+          config.MACHINE_GUN_TOWER_STATS.cost,
+          config.MACHINE_GUN_TOWER_STATS.range,
+          config.MACHINE_GUN_TOWER_STATS.cooldown,
+          config.MACHINE_GUN_TOWER_STATS.projectileSpeed,
+          config.MACHINE_GUN_TOWER_STATS.power
         );
         break;
       case "tower2":
@@ -179,11 +169,11 @@ export default class Game {
           this,
           gridPositionX,
           gridPositionY,
-          150,
-          200,
-          5,
-          15,
-          0.5
+          config.FLAMETHROWER_TOWER_STATS.cost,
+          config.FLAMETHROWER_TOWER_STATS.range,
+          config.FLAMETHROWER_TOWER_STATS.cooldown,
+          config.FLAMETHROWER_TOWER_STATS.projectileSpeed,
+          config.FLAMETHROWER_TOWER_STATS.power
         );
         break;
       default:
@@ -223,9 +213,9 @@ export default class Game {
       if (this.waveCount > 1) this.population.reproduce();
 
       this.waveSize = Math.floor(this.population.population.length / 2);
-      if (this.waveSize <= this.minWaveSize)
+      if (this.waveSize <= config.MIN_WAVE_SIZE)
         this.waveSize = Math.min(
-          this.minWaveSize,
+          config.MIN_WAVE_SIZE,
           this.population.population.length
         );
 
@@ -235,9 +225,9 @@ export default class Game {
   }
 
   populateGrid() {
-    for (let y = 0; y < this.canvas.height; y += this.cellSize) {
-      for (let x = 0; x < this.canvas.width; x += this.cellSize) {
-        this.grid.push(new Cell(this, x, y, this.cellSize));
+    for (let y = 0; y < this.canvas.height; y += config.CELL_SIZE) {
+      for (let x = 0; x < this.canvas.width; x += config.CELL_SIZE) {
+        this.grid.push(new Cell(this, x, y, config.CELL_SIZE));
       }
     }
   }
@@ -318,8 +308,8 @@ export default class Game {
       if (temp) {
         this.aliens.set(temp.id, temp);
         this.lastSpawnedTime = Date.now();
-        if (this.alienSpawnInterval > this.minSpawnInterval)
-          this.alienSpawnInterval -= this.spawnIntervalDecrement;
+        if (this.alienSpawnInterval > config.MIN_SPAWN_INTERVAL)
+          this.alienSpawnInterval -= config.SPAWN_INTERVAL_DECREMENT;
       }
     }
   }

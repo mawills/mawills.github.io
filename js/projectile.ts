@@ -1,3 +1,4 @@
+import config from "./configuration";
 import Game from "./game";
 import GameObject from "./gameObject";
 
@@ -51,7 +52,7 @@ export default class Projectile extends GameObject {
     }
 
     if (
-      this.x > this.game.canvas.width - this.game.cellSize ||
+      this.x > this.game.canvas.width - config.CELL_SIZE ||
       this.x < 0 ||
       this.y > this.game.canvas.height ||
       this.y < 0

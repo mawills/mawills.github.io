@@ -1,3 +1,4 @@
+import config from "./configuration";
 import Projectile from "./projectile";
 import Alien from "./alien";
 import Game from "./game";
@@ -24,8 +25,8 @@ export default class Tower extends GameObject {
       game,
       x,
       y,
-      game.cellSize - game.cellGap * 2,
-      game.cellSize - game.cellGap * 2
+      config.CELL_SIZE - config.CELL_GAP * 2,
+      config.CELL_SIZE - config.CELL_GAP * 2
     );
 
     this.cost = cost;

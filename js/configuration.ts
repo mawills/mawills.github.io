@@ -17,11 +17,18 @@ export default {
     MOUSE_WIDTH: 0.1,
     MOUSE_HEIGHT: 0.1,
   },
-  TOWER_COSTS: {
-    tower1: 100,
-    tower2: 150,
-    tower3: 100,
-    tower4: 100,
-    tower5: 100,
+  MACHINE_GUN_TOWER_STATS: {
+    cost: 100,
+    range: 500,
+    cooldown: 150,
+    projectileSpeed: 7,
+    power: 5,
+  },
+  FLAMETHROWER_TOWER_STATS: {
+    cost: 125,
+    range: 200,
+    cooldown: 5,
+    projectileSpeed: 15,
+    power: 0.5,
   },
 };
