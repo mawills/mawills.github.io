@@ -333,7 +333,7 @@ export default class Game {
     this.floatingTexts.forEach((floatingText) => {
       floatingText.update();
       floatingText.draw();
-      if (floatingText.lifespan < config.FLOATING_TEXT_LIFESPAN) {
+      if (!floatingText.expired()) {
         temp.push(floatingText);
       }
     });
