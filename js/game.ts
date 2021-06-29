@@ -77,7 +77,10 @@ export default class Game {
     // controls bar
     this.selectedTowerCard = "";
 
+    // mouse
     this.mouse = new Mouse();
+
+    // game status
     this.gameStarted = false;
     this.gameOver = false;
 
@@ -104,10 +107,7 @@ export default class Game {
     if (!this.gameOver) requestAnimationFrame(this.animate);
   };
 
-  collisionDetection(
-    first: GameObject | Mouse | Cell,
-    second: GameObject | Mouse | Cell
-  ) {
+  collisionDetection(first: GameObject | Mouse, second: GameObject | Mouse) {
     if (
       first.x >= second.x + second.width ||
       second.x >= first.x + first.width ||
@@ -227,7 +227,9 @@ export default class Game {
   populateGrid() {
     for (let y = 0; y < this.canvas.height; y += config.CELL_SIZE) {
       for (let x = 0; x < this.canvas.width; x += config.CELL_SIZE) {
-        this.grid.push(new Cell(this, x, y, config.CELL_SIZE));
+        this.grid.push(
+          new Cell(this, x, y, config.CELL_SIZE, config.CELL_SIZE)
+        );
       }
     }
   }
@@ -251,6 +253,7 @@ export default class Game {
 
   handleGrid() {
     for (const cell of this.grid) {
+      cell.update();
       cell.draw();
     }
   }
