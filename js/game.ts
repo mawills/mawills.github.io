@@ -103,7 +103,7 @@ export default class Game {
     this.handleAliens();
     this.handleFloatingTexts();
     this.handleAttackWave();
-    this.handleGameStats();
+    this.handleGameStatsBar();
     if (!this.gameOver) requestAnimationFrame(this.animate);
   };
 
@@ -234,7 +234,7 @@ export default class Game {
     }
   }
 
-  handleGameStats() {
+  handleGameStatsBar() {
     this.stats.innerText =
       "Resources: " +
       this.numResources +
