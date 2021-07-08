@@ -63,12 +63,12 @@ export class MachineGunTower extends Tower {
     if (this.target && !this.game.aliens.has(this.target.id))
       this.target = null;
     if (!this.target) {
-      this.game.aliens.forEach((alien) => {
+      for (const alien of this.game.aliens.values()) {
         if (this.game.calculateDistance(this, alien) < this.range) {
           this.target = alien;
           return;
         }
-      });
+      }
     }
   }
 
@@ -170,12 +170,12 @@ export class FlamethrowerTower extends Tower {
     if (this.target && !this.game.aliens.has(this.target.id))
       this.target = null;
     if (!this.target) {
-      this.game.aliens.forEach((alien) => {
+      for (const alien of this.game.aliens.values()) {
         if (this.game.calculateDistance(this, alien) < this.range) {
           this.target = alien;
           return;
         }
-      });
+      }
     }
   }
 
@@ -203,7 +203,7 @@ export class FlamethrowerTower extends Tower {
               this.angle,
               this.projectileSpeed,
               this.power,
-              this.game.canvas.width
+              this.range
             )
           );
           this.lastFired = now;
