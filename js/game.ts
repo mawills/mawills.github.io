@@ -84,7 +84,7 @@ export default class Game {
     this.gameStarted = false;
     this.gameOver = false;
 
-    this.populateGrid();
+    this.initializeGrid();
     this.initializeControlsBar();
     this.handleMouse();
     this.handleCanvasClicks();
@@ -145,18 +145,14 @@ export default class Game {
     });
   }
 
-  placeTower() {
-    const gridPositionX = this.mouse.x - (this.mouse.x % config.CELL_SIZE);
-    const gridPositionY = this.mouse.y - (this.mouse.y % config.CELL_SIZE);
-    const towerId = gridPositionX + "," + gridPositionY;
-    if (this.towers.has(towerId)) return;
+  purchaseTower(towerId: string, gridCellX: number, gridCellY: number) {
     let newTower: Tower;
     switch (this.selectedTowerCard) {
       case "tower1":
         newTower = new MachineGunTower(
           this,
-          gridPositionX,
-          gridPositionY,
+          gridCellX,
+          gridCellY,
           config.MACHINE_GUN_TOWER_STATS.cost,
           config.MACHINE_GUN_TOWER_STATS.range,
           config.MACHINE_GUN_TOWER_STATS.cooldown,
@@ -167,8 +163,8 @@ export default class Game {
       case "tower2":
         newTower = new FlamethrowerTower(
           this,
-          gridPositionX,
-          gridPositionY,
+          gridCellX,
+          gridCellY,
           config.FLAMETHROWER_TOWER_STATS.cost,
           config.FLAMETHROWER_TOWER_STATS.range,
           config.FLAMETHROWER_TOWER_STATS.cooldown,
@@ -179,26 +175,39 @@ export default class Game {
       default:
         return;
     }
-    if (this.numResources >= newTower.cost) {
-      this.towers.set(towerId, newTower);
-      this.numResources -= newTower.cost;
-    } else {
-      this.floatingTexts.push(
-        new FloatingText(
-          this,
-          "Insufficient Resources",
-          this.mouse.x,
-          this.mouse.y,
-          15,
-          "red"
-        )
+
+    if (newTower.cost >= this.numResources) {
+      this.createFloatingText(
+        "Insufficient Resources",
+        this.mouse.x,
+        this.mouse.y
       );
+    } else {
+      this.numResources -= newTower.cost;
+      this.selectedTowerCard = "";
+      this.towerStats.innerText = "";
+      this.towers.set(towerId, newTower);
     }
   }
 
   handleCanvasClicks() {
     this.canvas.addEventListener("click", () => {
-      this.placeTower();
+      const gridCellX = this.mouse.x - (this.mouse.x % config.CELL_SIZE);
+      const gridCellY = this.mouse.y - (this.mouse.y % config.CELL_SIZE);
+      const towerId = gridCellX + "," + gridCellY;
+
+      if (this.towers.has(towerId)) {
+        const tower = this.towers.get(towerId);
+        this.towerStats.innerHTML = `<ul>
+          <li>Power: ${tower?.power}</li>
+          <li>Cooldown: ${tower?.cooldown}</li>
+        </ul>
+        <button>Upgrade</button>`;
+      }
+
+      if (this.selectedTowerCard.length > 0 && !this.towers.has(towerId)) {
+        this.purchaseTower(towerId, gridCellX, gridCellY);
+      }
     });
   }
 
@@ -224,7 +233,7 @@ export default class Game {
     });
   }
 
-  populateGrid() {
+  initializeGrid() {
     for (let y = 0; y < this.canvas.height; y += config.CELL_SIZE) {
       for (let x = 0; x < this.canvas.width; x += config.CELL_SIZE) {
         this.grid.push(
@@ -288,16 +297,7 @@ export default class Game {
 
       if (!alien.alive()) {
         this.aliens.delete(key);
-        this.floatingTexts.push(
-          new FloatingText(
-            this,
-            "+" + alien.lootValue,
-            alien.x,
-            alien.y,
-            15,
-            "black"
-          )
-        );
+        this.createFloatingText("+" + alien.lootValue, alien.x, alien.y);
         this.numResources += alien.lootValue;
         this.numKills += 1;
       }
@@ -338,5 +338,9 @@ export default class Game {
       }
     });
     this.floatingTexts = temp;
+  }
+
+  createFloatingText(text: string, x: number, y: number) {
+    this.floatingTexts.push(new FloatingText(this, text, x, y, 15, "black"));
   }
 }
