@@ -277,7 +277,7 @@ export default class Game {
     this.projectiles.forEach((projectile) => {
       projectile.update();
       projectile.draw();
-      if (!projectile.destroyed) temp.push(projectile);
+      if (!projectile.destroyed()) temp.push(projectile);
     });
     this.projectiles = temp;
   }

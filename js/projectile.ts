@@ -8,7 +8,6 @@ export default class Projectile extends GameObject {
   speed: number;
   range: number;
   angle: number;
-  destroyed: boolean;
 
   constructor(
     game: Game,
@@ -33,7 +32,6 @@ export default class Projectile extends GameObject {
     this.range = range;
     this.width = 6;
     this.height = 6;
-    this.destroyed = false;
   }
 
   checkOutOfRange(): boolean {
@@ -44,11 +42,8 @@ export default class Projectile extends GameObject {
     return dist > this.range;
   }
 
-  checkIfDestroyed() {
-    if (this.checkOutOfRange()) {
-      this.destroyed = true;
-      return;
-    }
+  destroyed() {
+    if (this.checkOutOfRange()) return true;
 
     if (
       this.x > this.game.canvas.width ||
@@ -56,23 +51,24 @@ export default class Projectile extends GameObject {
       this.y > this.game.canvas.height ||
       this.y < 0
     ) {
-      this.destroyed = true;
-      return;
+      return true;
     }
 
+    let destroyed = false;
     this.game.aliens.forEach((alien) => {
       if (this.game.collisionDetection(this, alien)) {
         alien.health -= this.power;
-        this.destroyed = true;
+        destroyed = true;
         return;
       }
     });
+
+    return destroyed;
   }
 
   update() {
     this.x += this.speed * Math.cos(this.angle);
     this.y += this.speed * Math.sin(this.angle);
-    this.checkIfDestroyed();
   }
 
   draw() {
