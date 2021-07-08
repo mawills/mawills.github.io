@@ -6,7 +6,8 @@
     "noImplicitAny": true,
     "strict": true,
     "noUnusedLocals": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "downlevelIteration": true
   },
   "include": ["./js/**/*"]
 }

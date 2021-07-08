@@ -54,16 +54,14 @@ export default class Projectile extends GameObject {
       return true;
     }
 
-    let destroyed = false;
-    this.game.aliens.forEach((alien) => {
+    for (const alien of this.game.aliens.values()) {
       if (this.game.collisionDetection(this, alien)) {
         alien.health -= this.power;
-        destroyed = true;
-        return;
+        return true;
       }
-    });
+    }
 
-    return destroyed;
+    return false;
   }
 
   update() {
