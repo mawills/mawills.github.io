@@ -139,8 +139,13 @@ export default class Game {
     let temp: any = Array.from(this.towerSelector.children);
     temp.forEach((child: any) => {
       child.onclick = () => {
-        this.selectedTowerCard = child.id;
-        this.towerStats.innerText = `selected ${this.selectedTowerCard}`;
+        if (this.selectedTowerCard == child.innerText) {
+          this.selectedTowerCard = "";
+          this.towerStats.innerText = "";
+        } else {
+          this.selectedTowerCard = child.innerText;
+          this.towerStats.innerText = `selected ${this.selectedTowerCard}`;
+        }
       };
     });
   }
@@ -148,7 +153,7 @@ export default class Game {
   purchaseTower(towerId: string, gridCellX: number, gridCellY: number) {
     let newTower: Tower;
     switch (this.selectedTowerCard) {
-      case "tower1":
+      case "Machine Gun Tower":
         newTower = new MachineGunTower(
           this,
           gridCellX,
@@ -160,7 +165,7 @@ export default class Game {
           config.MACHINE_GUN_TOWER_STATS.power
         );
         break;
-      case "tower2":
+      case "Flamethrower Tower":
         newTower = new FlamethrowerTower(
           this,
           gridCellX,
