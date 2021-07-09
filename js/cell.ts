@@ -1,5 +1,6 @@
 import Game from "./game";
 import GameObject from "./gameObject";
+import { collisionDetection } from "./util";
 
 export default class Cell extends GameObject {
   highlighted: boolean;
@@ -12,7 +13,7 @@ export default class Cell extends GameObject {
   update() {
     this.game.mouse.x &&
     this.game.mouse.y &&
-    this.game.collisionDetection(this, this.game.mouse)
+    collisionDetection(this, this.game.mouse)
       ? (this.highlighted = true)
       : (this.highlighted = false);
   }

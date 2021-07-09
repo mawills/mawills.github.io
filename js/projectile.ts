@@ -1,5 +1,6 @@
 import Game from "./game";
 import GameObject from "./gameObject";
+import { collisionDetection } from "./util";
 
 export default class Projectile extends GameObject {
   startingX: number;
@@ -55,7 +56,7 @@ export default class Projectile extends GameObject {
     }
 
     for (const alien of this.game.aliens.values()) {
-      if (this.game.collisionDetection(this, alien)) {
+      if (collisionDetection(this, alien)) {
         alien.health -= this.power;
         return true;
       }

@@ -3,6 +3,7 @@ import Projectile from "./projectile";
 import Alien from "./alien";
 import Game from "./game";
 import GameObject from "./gameObject";
+import { calculateDistance, collisionDetection } from "./util";
 
 export default class Tower extends GameObject {
   level: number;
@@ -48,7 +49,7 @@ export class MachineGunTower extends Tower {
       this.target = null;
     if (!this.target) {
       for (const alien of this.game.aliens.values()) {
-        if (this.game.calculateDistance(this, alien) < this.range) {
+        if (calculateDistance(this, alien) < this.range) {
           this.target = alien;
           return;
         }
@@ -67,7 +68,7 @@ export class MachineGunTower extends Tower {
   checkFire() {
     if (this.target) {
       const now = Date.now();
-      const distanceToTarget = this.game.calculateDistance(this, this.target);
+      const distanceToTarget = calculateDistance(this, this.target);
       if (this.range > distanceToTarget) {
         if (now - this.lastFired > this.cooldown) {
           this.game.projectiles.push(
@@ -108,7 +109,7 @@ export class MachineGunTower extends Tower {
     if (
       this.game.mouse.x &&
       this.game.mouse.y &&
-      this.game.collisionDetection(this, this.game.mouse)
+      collisionDetection(this, this.game.mouse)
     ) {
       this.game.ctx.beginPath();
       const centerX = this.x + this.width / 2;
@@ -154,7 +155,7 @@ export class FlamethrowerTower extends Tower {
       this.target = null;
     if (!this.target) {
       for (const alien of this.game.aliens.values()) {
-        if (this.game.calculateDistance(this, alien) < this.range) {
+        if (calculateDistance(this, alien) < this.range) {
           this.target = alien;
           return;
         }
@@ -173,7 +174,7 @@ export class FlamethrowerTower extends Tower {
   checkFire() {
     if (this.target) {
       const now = Date.now();
-      const distanceToTarget = this.game.calculateDistance(this, this.target);
+      const distanceToTarget = calculateDistance(this, this.target);
       if (this.range > distanceToTarget) {
         if (now - this.lastFired > this.cooldown) {
           this.game.projectiles.push(
@@ -214,7 +215,7 @@ export class FlamethrowerTower extends Tower {
     if (
       this.game.mouse.x &&
       this.game.mouse.y &&
-      this.game.collisionDetection(this, this.game.mouse)
+      collisionDetection(this, this.game.mouse)
     ) {
       this.game.ctx.beginPath();
       const centerX = this.x + this.width / 2;
