@@ -5,22 +5,10 @@ import Game from "./game";
 import GameObject from "./gameObject";
 
 export default class Tower extends GameObject {
+  level: number;
   cost: number;
-  range: number;
-  power: number;
-  projectileSpeed: number;
-  cooldown: number;
 
-  constructor(
-    game: Game,
-    x: number,
-    y: number,
-    cost: number,
-    range: number,
-    cooldown: number,
-    projectileSpeed: number,
-    power: number
-  ) {
+  constructor(game: Game, x: number, y: number, cost: number) {
     super(
       game,
       x,
@@ -29,31 +17,27 @@ export default class Tower extends GameObject {
       config.CELL_SIZE - config.CELL_GAP * 2
     );
 
+    this.level = 1;
     this.cost = cost;
-    this.range = range;
-    this.cooldown = cooldown;
-    this.projectileSpeed = projectileSpeed;
-    this.power = power;
   }
 }
 
 export class MachineGunTower extends Tower {
+  range: number;
+  cooldown: number;
+  projectileSpeed: number;
+  power: number;
   lastFired: number;
   angle: number;
   target: Alien | null;
 
-  constructor(
-    game: Game,
-    x: number,
-    y: number,
-    cost: number,
-    range: number,
-    cooldown: number,
-    projectileSpeed: number,
-    power: number
-  ) {
-    super(game, x, y, cost, range, cooldown, projectileSpeed, power);
+  constructor(game: Game, x: number, y: number) {
+    super(game, x, y, config.MACHINE_GUN_TOWER_STATS.cost);
 
+    this.range = config.MACHINE_GUN_TOWER_STATS.range;
+    this.cooldown = config.MACHINE_GUN_TOWER_STATS.cooldown;
+    this.projectileSpeed = config.MACHINE_GUN_TOWER_STATS.projectileSpeed;
+    this.power = config.MACHINE_GUN_TOWER_STATS.power;
     this.angle = 0;
     this.target = null;
     this.lastFired = Date.now();
@@ -145,22 +129,21 @@ export class MachineGunTower extends Tower {
 }
 
 export class FlamethrowerTower extends Tower {
+  range: number;
+  cooldown: number;
+  projectileSpeed: number;
+  power: number;
   lastFired: number;
   angle: number;
   target: Alien | null;
 
-  constructor(
-    game: Game,
-    x: number,
-    y: number,
-    cost: number,
-    range: number,
-    cooldown: number,
-    projectileSpeed: number,
-    power: number
-  ) {
-    super(game, x, y, cost, range, cooldown, projectileSpeed, power);
+  constructor(game: Game, x: number, y: number) {
+    super(game, x, y, config.FLAMETHROWER_TOWER_STATS.cost);
 
+    this.range = config.FLAMETHROWER_TOWER_STATS.range;
+    this.cooldown = config.FLAMETHROWER_TOWER_STATS.cooldown;
+    this.projectileSpeed = config.FLAMETHROWER_TOWER_STATS.projectileSpeed;
+    this.power = config.FLAMETHROWER_TOWER_STATS.power;
     this.angle = 0;
     this.target = null;
     this.lastFired = Date.now();

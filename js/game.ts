@@ -144,7 +144,17 @@ export default class Game {
           this.towerStats.innerText = "";
         } else {
           this.selectedTowerCard = child.innerText;
-          this.towerStats.innerText = `selected ${this.selectedTowerCard}`;
+          switch (child.innerText) {
+            case "machine gun tower":
+              this.towerStats.innerText = `cost: ${config.MACHINE_GUN_TOWER_STATS.cost}`;
+              break;
+            case "flamethrower tower":
+              this.towerStats.innerText = `cost: ${config.FLAMETHROWER_TOWER_STATS.cost}`;
+              break;
+            default:
+              this.towerStats.innerText = `selected ${this.selectedTowerCard}`;
+              break;
+          }
         }
       };
     });
@@ -153,29 +163,11 @@ export default class Game {
   purchaseTower(towerId: string, gridCellX: number, gridCellY: number) {
     let newTower: Tower;
     switch (this.selectedTowerCard) {
-      case "Machine Gun Tower":
-        newTower = new MachineGunTower(
-          this,
-          gridCellX,
-          gridCellY,
-          config.MACHINE_GUN_TOWER_STATS.cost,
-          config.MACHINE_GUN_TOWER_STATS.range,
-          config.MACHINE_GUN_TOWER_STATS.cooldown,
-          config.MACHINE_GUN_TOWER_STATS.projectileSpeed,
-          config.MACHINE_GUN_TOWER_STATS.power
-        );
+      case "machine gun tower":
+        newTower = new MachineGunTower(this, gridCellX, gridCellY);
         break;
-      case "Flamethrower Tower":
-        newTower = new FlamethrowerTower(
-          this,
-          gridCellX,
-          gridCellY,
-          config.FLAMETHROWER_TOWER_STATS.cost,
-          config.FLAMETHROWER_TOWER_STATS.range,
-          config.FLAMETHROWER_TOWER_STATS.cooldown,
-          config.FLAMETHROWER_TOWER_STATS.projectileSpeed,
-          config.FLAMETHROWER_TOWER_STATS.power
-        );
+      case "flamethrower tower":
+        newTower = new FlamethrowerTower(this, gridCellX, gridCellY);
         break;
       default:
         return;
@@ -183,7 +175,7 @@ export default class Game {
 
     if (newTower.cost >= this.numResources) {
       this.createFloatingText(
-        "Insufficient Resources",
+        "insufficient resources",
         this.mouse.x,
         this.mouse.y
       );
@@ -202,12 +194,12 @@ export default class Game {
       const towerId = gridCellX + "," + gridCellY;
 
       if (this.towers.has(towerId)) {
+        this.selectedTowerCard = "";
         const tower = this.towers.get(towerId);
         this.towerStats.innerHTML = `<ul>
-          <li>Power: ${tower?.power}</li>
-          <li>Cooldown: ${tower?.cooldown}</li>
+          <li>current level: ${tower?.level}</li>
         </ul>
-        <button>Upgrade</button>`;
+        <button>upgrade</button>`;
       }
 
       if (this.selectedTowerCard.length > 0 && !this.towers.has(towerId)) {
@@ -250,16 +242,16 @@ export default class Game {
 
   handleGameStatsBar() {
     this.stats.innerText =
-      "Resources: " +
+      "resources: " +
       this.numResources +
       " " +
-      "Kills: " +
+      "kills: " +
       this.numKills +
       " " +
-      "Wave: " +
+      "wave: " +
       this.waveCount +
       " " +
-      "Population: " +
+      "population: " +
       (this.population.population.length +
         this.aliens.size +
         this.attackWave.length);
