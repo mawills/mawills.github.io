@@ -18,11 +18,11 @@ export default {
     MOUSE_HEIGHT: 0.1,
   },
   MACHINE_GUN_TOWER_STATS: {
-    cost: 100,
-    range: 500,
-    cooldown: 150,
-    projectileSpeed: 7,
-    power: 5,
+    cost: [100, 150, 300],
+    range: [500, 525, 550],
+    cooldown: [175, 150, 125],
+    projectileSpeed: [7, 7, 7],
+    power: [5, 7, 10],
   },
   FLAMETHROWER_TOWER_STATS: {
     cost: 125,

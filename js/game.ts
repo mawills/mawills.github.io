@@ -127,7 +127,7 @@ export default class Game {
           this.selectedTowerCard = child.innerText;
           switch (child.innerText) {
             case "machine gun tower":
-              this.towerStats.innerText = `cost: ${config.MACHINE_GUN_TOWER_STATS.cost}`;
+              this.towerStats.innerText = `cost: ${config.MACHINE_GUN_TOWER_STATS.cost[0]}`;
               break;
             case "flamethrower tower":
               this.towerStats.innerText = `cost: ${config.FLAMETHROWER_TOWER_STATS.cost}`;
@@ -168,6 +168,35 @@ export default class Game {
     }
   }
 
+  selectTower(towerId: string) {
+    this.towerStats.innerHTML = "";
+    const tower = this.towers.get(towerId);
+
+    if (tower instanceof MachineGunTower) {
+      this.towerStats.innerHTML = `<ul>
+          <li>power: ${tower.power}</li>
+          <li>range: ${tower.range}</li>
+          <li>cooldown: ${tower.cooldown}</li>
+        </ul>`;
+      const upgradeCost = config.MACHINE_GUN_TOWER_STATS.cost[tower.level];
+      if (upgradeCost) {
+        let upgradeButton = document.createElement("button");
+        upgradeButton.innerText = `upgrade: ${upgradeCost}`;
+        upgradeButton.addEventListener("click", () => {
+          if (this.numResources >= upgradeCost) {
+            tower.upgrade();
+            this.selectTower(towerId);
+          }
+        });
+        this.towerStats.appendChild(upgradeButton);
+      }
+    }
+
+    if (tower instanceof FlamethrowerTower) {
+      // do stuff
+    }
+  }
+
   handleCanvasClicks() {
     this.canvas.addEventListener("click", () => {
       const gridCellX = this.mouse.x - (this.mouse.x % config.CELL_SIZE);
@@ -176,11 +205,7 @@ export default class Game {
 
       if (this.towers.has(towerId)) {
         this.selectedTowerCard = "";
-        const tower = this.towers.get(towerId);
-        this.towerStats.innerHTML = `<ul>
-          <li>current level: ${tower?.level}</li>
-        </ul>
-        <button>upgrade</button>`;
+        this.selectTower(towerId);
       }
 
       if (this.selectedTowerCard.length > 0 && !this.towers.has(towerId)) {
@@ -318,7 +343,12 @@ export default class Game {
     this.floatingTexts = temp;
   }
 
-  createFloatingText(text: string, x: number, y: number) {
-    this.floatingTexts.push(new FloatingText(this, text, x, y, 15, "black"));
+  createFloatingText(
+    text: string,
+    x: number,
+    y: number,
+    color: string = "black"
+  ) {
+    this.floatingTexts.push(new FloatingText(this, text, x, y, 15, color));
   }
 }

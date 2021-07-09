@@ -33,15 +33,26 @@ export class MachineGunTower extends Tower {
   target: Alien | null;
 
   constructor(game: Game, x: number, y: number) {
-    super(game, x, y, config.MACHINE_GUN_TOWER_STATS.cost);
+    super(game, x, y, config.MACHINE_GUN_TOWER_STATS.cost[0]);
 
-    this.range = config.MACHINE_GUN_TOWER_STATS.range;
-    this.cooldown = config.MACHINE_GUN_TOWER_STATS.cooldown;
-    this.projectileSpeed = config.MACHINE_GUN_TOWER_STATS.projectileSpeed;
-    this.power = config.MACHINE_GUN_TOWER_STATS.power;
+    this.range = config.MACHINE_GUN_TOWER_STATS.range[0];
+    this.cooldown = config.MACHINE_GUN_TOWER_STATS.cooldown[0];
+    this.projectileSpeed = config.MACHINE_GUN_TOWER_STATS.projectileSpeed[0];
+    this.power = config.MACHINE_GUN_TOWER_STATS.power[0];
     this.angle = 0;
     this.target = null;
     this.lastFired = Date.now();
+  }
+
+  upgrade() {
+    if (this.level < 3) {
+      this.level += 1;
+      this.range = config.MACHINE_GUN_TOWER_STATS.range[this.level - 1];
+      this.cooldown = config.MACHINE_GUN_TOWER_STATS.cooldown[this.level - 1];
+      this.projectileSpeed =
+        config.MACHINE_GUN_TOWER_STATS.projectileSpeed[this.level - 1];
+      this.power = config.MACHINE_GUN_TOWER_STATS.power[this.level - 1];
+    }
   }
 
   findTarget() {
@@ -105,7 +116,19 @@ export class MachineGunTower extends Tower {
     this.game.ctx.fillRect(this.x, this.y, this.width, this.height);
     this.game.ctx.fillStyle = "black";
     this.game.ctx.font = "30px Arial";
-    this.game.ctx.fillText("===", this.x + 15, this.y + 30);
+    let barrel;
+    switch (this.level) {
+      case 2:
+        barrel = "==";
+        break;
+      case 3:
+        barrel = "===";
+        break;
+      default:
+        barrel = "=";
+        break;
+    }
+    this.game.ctx.fillText(barrel, this.x + 15, this.y + 30);
     if (
       this.game.mouse.x &&
       this.game.mouse.y &&
