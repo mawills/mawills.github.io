@@ -174,10 +174,10 @@ export default class Game {
 
     if (tower instanceof MachineGunTower) {
       this.towerStats.innerHTML = `<ul>
-          <li>power: ${tower.power}</li>
-          <li>range: ${tower.range}</li>
-          <li>cooldown: ${tower.cooldown}</li>
-        </ul>`;
+        <li>power: ${tower.power}</li>
+        <li>range: ${tower.range}</li>
+        <li>cooldown: ${tower.cooldown}</li>
+      </ul>`;
       const upgradeCost = config.MACHINE_GUN_TOWER_STATS.cost[tower.level];
       if (upgradeCost) {
         let upgradeButton = document.createElement("button");
@@ -186,6 +186,8 @@ export default class Game {
           if (this.numResources >= upgradeCost) {
             tower.upgrade();
             this.selectTower(towerId);
+          } else {
+            this.createFloatingText("insufficient resources", tower.x, tower.y);
           }
         });
         this.towerStats.appendChild(upgradeButton);
