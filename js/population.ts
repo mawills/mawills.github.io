@@ -32,21 +32,23 @@ export default class Population {
     this.initializePopulation(n);
   }
 
-  randomNumberInRange(min: number, max: number) {
-    return Math.random() * (max - min) + min;
-  }
-
   initializePopulation(n: number) {
     for (let i = 0; i < n; i++) {
-      const height = this.randomNumberInRange(this.minHeight, this.maxHeight);
+      const height = this.game.randomNumberInRange(
+        this.minHeight,
+        this.maxHeight
+      );
       this.population.push(
         new Alien(
           this.game,
-          this.randomNumberInRange(height, this.game.canvas.height - height),
-          this.randomNumberInRange(this.minWidth, this.maxWidth),
+          this.game.randomNumberInRange(
+            height,
+            this.game.canvas.height - height
+          ),
+          this.game.randomNumberInRange(this.minWidth, this.maxWidth),
           height,
-          this.randomNumberInRange(this.minHealth, this.maxHealth),
-          this.randomNumberInRange(this.minSpeed, this.maxSpeed)
+          this.game.randomNumberInRange(this.minHealth, this.maxHealth),
+          this.game.randomNumberInRange(this.minSpeed, this.maxSpeed)
         )
       );
     }
@@ -84,26 +86,23 @@ export default class Population {
     while (mid < this.population.length) {
       const parent1 = this.population[start];
       const parent2 = this.population[mid];
-      const height =
-        (Math.min(parent1.height, parent2.height),
-        Math.max(parent1.height, parent2.height));
+
+      const height = this.game.randomNumberInRange(
+        parent1.height,
+        parent2.height
+      );
+
       offspring.push(
         new Alien(
           this.game,
-          this.randomNumberInRange(height, this.game.canvas.height - height),
-          this.randomNumberInRange(
-            Math.min(parent1.width, parent2.width),
-            Math.max(parent1.width, parent2.width)
+          this.game.randomNumberInRange(
+            height,
+            this.game.canvas.height - height
           ),
+          this.game.randomNumberInRange(parent1.width, parent2.width),
           height,
-          this.randomNumberInRange(
-            Math.min(parent1.maxHealth, parent2.maxHealth),
-            Math.max(parent1.maxHealth, parent2.maxHealth)
-          ),
-          this.randomNumberInRange(
-            Math.min(parent1.speed, parent2.speed),
-            Math.max(parent1.speed, parent2.speed)
-          )
+          this.game.randomNumberInRange(parent1.maxHealth, parent2.maxHealth),
+          this.game.randomNumberInRange(parent1.speed, parent2.speed)
         )
       );
       start++;

@@ -119,6 +119,12 @@ export default class Game {
     return true;
   }
 
+  randomNumberInRange(a: number, b: number) {
+    const min = Math.min(a, b);
+    const max = Math.max(a, b);
+    return Math.random() * (max - min) + min;
+  }
+
   calculateDistance(first: GameObject, second: GameObject) {
     const deltaX = Math.abs(first.x - second.x);
     const deltaY = Math.abs(first.y - second.y);
