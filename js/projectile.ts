@@ -31,8 +31,8 @@ export default class Projectile extends GameObject {
     this.speed = speed;
     this.power = power;
     this.range = range;
-    this.width = 6;
-    this.height = 6;
+    this.width = width;
+    this.height = height;
   }
 
   checkOutOfRange(): boolean {

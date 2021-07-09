@@ -130,7 +130,7 @@ export default class Game {
               this.towerStats.innerText = `cost: ${config.MACHINE_GUN_TOWER_STATS.cost[0]}`;
               break;
             case "flamethrower tower":
-              this.towerStats.innerText = `cost: ${config.FLAMETHROWER_TOWER_STATS.cost}`;
+              this.towerStats.innerText = `cost: ${config.FLAMETHROWER_TOWER_STATS.cost[0]}`;
               break;
             default:
               this.towerStats.innerText = `selected ${this.selectedTowerCard}`;
@@ -172,7 +172,10 @@ export default class Game {
     this.towerStats.innerHTML = "";
     const tower = this.towers.get(towerId);
 
-    if (tower instanceof MachineGunTower) {
+    if (
+      tower instanceof MachineGunTower ||
+      tower instanceof FlamethrowerTower
+    ) {
       this.towerStats.innerHTML = `<ul>
         <li>power: ${tower.power}</li>
         <li>range: ${tower.range}</li>
@@ -192,10 +195,6 @@ export default class Game {
         });
         this.towerStats.appendChild(upgradeButton);
       }
-    }
-
-    if (tower instanceof FlamethrowerTower) {
-      // do stuff
     }
   }
 

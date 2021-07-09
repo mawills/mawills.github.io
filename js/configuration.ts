@@ -9,7 +9,7 @@ export default {
   INITIAL_SPAWN_INTERVAL: 6000,
   MIN_SPAWN_INTERVAL: 600,
   SPAWN_INTERVAL_DECREMENT: 200,
-  PLAYER_STARTING_RESOURCES: 300,
+  PLAYER_STARTING_RESOURCES: 3000,
   FLOATING_TEXT_LIFESPAN: 50,
   MOUSE_CONFIG: {
     MOUSE_STARTING_X: -1,
@@ -25,10 +25,11 @@ export default {
     power: [5, 7, 10],
   },
   FLAMETHROWER_TOWER_STATS: {
-    cost: 125,
-    range: 200,
-    cooldown: 5,
-    projectileSpeed: 15,
-    power: 0.5,
+    cost: [125, 175, 350],
+    range: [200, 210, 220],
+    cooldown: [5, 5, 5],
+    projectileSpeed: [15, 17, 20],
+    projectileSize: [10, 15, 20],
+    power: [0.5, 1, 3],
   },
 };

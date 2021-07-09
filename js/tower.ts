@@ -162,12 +162,12 @@ export class FlamethrowerTower extends Tower {
   target: Alien | null;
 
   constructor(game: Game, x: number, y: number) {
-    super(game, x, y, config.FLAMETHROWER_TOWER_STATS.cost);
+    super(game, x, y, config.FLAMETHROWER_TOWER_STATS.cost[0]);
 
-    this.range = config.FLAMETHROWER_TOWER_STATS.range;
-    this.cooldown = config.FLAMETHROWER_TOWER_STATS.cooldown;
-    this.projectileSpeed = config.FLAMETHROWER_TOWER_STATS.projectileSpeed;
-    this.power = config.FLAMETHROWER_TOWER_STATS.power;
+    this.range = config.FLAMETHROWER_TOWER_STATS.range[0];
+    this.cooldown = config.FLAMETHROWER_TOWER_STATS.cooldown[0];
+    this.projectileSpeed = config.FLAMETHROWER_TOWER_STATS.projectileSpeed[0];
+    this.power = config.FLAMETHROWER_TOWER_STATS.power[0];
     this.angle = 0;
     this.target = null;
     this.lastFired = Date.now();
@@ -183,6 +183,17 @@ export class FlamethrowerTower extends Tower {
           return;
         }
       }
+    }
+  }
+
+  upgrade() {
+    if (this.level < 3) {
+      this.level += 1;
+      this.range = config.FLAMETHROWER_TOWER_STATS.range[this.level - 1];
+      this.cooldown = config.FLAMETHROWER_TOWER_STATS.cooldown[this.level - 1];
+      this.projectileSpeed =
+        config.FLAMETHROWER_TOWER_STATS.projectileSpeed[this.level - 1];
+      this.power = config.FLAMETHROWER_TOWER_STATS.power[this.level - 1];
     }
   }
 
@@ -205,8 +216,8 @@ export class FlamethrowerTower extends Tower {
               this.game,
               this.x + this.width / 2,
               this.y + this.height / 2,
-              6,
-              6,
+              config.FLAMETHROWER_TOWER_STATS.projectileSize[this.level - 1],
+              config.FLAMETHROWER_TOWER_STATS.projectileSize[this.level - 1],
               this.angle,
               this.projectileSpeed,
               this.power,
@@ -234,7 +245,19 @@ export class FlamethrowerTower extends Tower {
     this.game.ctx.fillRect(this.x, this.y, this.width, this.height);
     this.game.ctx.fillStyle = "black";
     this.game.ctx.font = "30px Arial";
-    this.game.ctx.fillText("===", this.x + 15, this.y + 30);
+    let barrel;
+    switch (this.level) {
+      case 2:
+        barrel = "==";
+        break;
+      case 3:
+        barrel = "===";
+        break;
+      default:
+        barrel = "=";
+        break;
+    }
+    this.game.ctx.fillText(barrel, this.x + 15, this.y + 30);
     if (
       this.game.mouse.x &&
       this.game.mouse.y &&
