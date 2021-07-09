@@ -1,3 +1,4 @@
+import config from "./configuration";
 import Alien from "./alien";
 import Game from "./game";
 import { randomNumberInRange } from "./util";
@@ -18,17 +19,17 @@ export default class Population {
     this.game = game;
     this.population = [];
 
-    this.maxHeight = 100;
-    this.minHeight = 10;
+    this.maxHeight = config.ALIEN_TRAITS.MAX_HEIGHT;
+    this.minHeight = config.ALIEN_TRAITS.MIN_HEIGHT;
 
-    this.maxWidth = 100;
-    this.minWidth = 10;
+    this.maxWidth = config.ALIEN_TRAITS.MAX_WIDTH;
+    this.minWidth = config.ALIEN_TRAITS.MIN_WIDTH;
 
-    this.maxHealth = 300;
-    this.minHealth = 50;
+    this.maxHealth = config.ALIEN_TRAITS.MAX_HEALTH;
+    this.minHealth = config.ALIEN_TRAITS.MIN_HEALTH;
 
-    this.maxSpeed = 1.5;
-    this.minSpeed = 0.2;
+    this.maxSpeed = config.ALIEN_TRAITS.MAX_SPEED;
+    this.minSpeed = config.ALIEN_TRAITS.MIN_SPEED;
 
     this.initializePopulation(n);
   }
